@@ -1,0 +1,128 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.env
+.env.*
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs
+*.log
+*.out
+log_*.out
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.backup
+*.bak
+*.old
+*_backup.py
+*_backup_*.py
+
+# Test files
+test_*.py
+*_test.py
+comprehensive_*.py
+senior_*.py
+
+# Analysis and utility files
+analyze_*.py
+fix_*.py
+init_*.py
+migrate_*.py
+setup_*.py
+show_*.py
+force_*.py
+build_*.py
+deep_*.py
+channel_*.py
+ocr_*.py
+privacy_*.py
+bot_with_*.py
+run_*.py
+start_*.py
+quick_*.py
+check_*.py
+demo_*.py
+
+# Documentation (keep only essential)
+*.md
+!README.md
+!DEPLOYMENT_FILES.md
+
+# JSON config files (not needed for core functionality)
+*.json
+
+# HTML files
+*.html
+web/
+
+# Temporary files
+*.tmp
+*.temp
+
+# Scripts that are not core functionality
+scripts/bootstrap_*.py
+scripts/monitor_*.py
+scripts/db_*.py
+scripts/show_*.py
+scripts/set_*.sh
+
+# Old bot versions
+bot_retail.py
+bot_retail2_backup.py
+
+# Config files that might contain sensitive data
+config.py
+setup.py
+
+# Potentially unnecessary files
+Потенциально мусор/
+
+# Personal notes
+мои_заметки.txt
