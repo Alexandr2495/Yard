@@ -94,6 +94,9 @@ demo_*.py
 *.md
 !README.md
 !DEPLOYMENT_FILES.md
+!SERVER_DEPLOYMENT.md
+!GIT_USAGE.md
+!FIRST_CONNECTION.md
 
 # JSON config files (not needed for core functionality)
 *.json

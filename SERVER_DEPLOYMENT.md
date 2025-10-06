@@ -5,6 +5,7 @@
 1. **Подключение к серверу:**
 ```bash
 ssh root@46.148.238.248
+# При первом подключении введите "yes" для подтверждения ключа сервера
 ```
 
 2. **Обновление системы:**
@@ -76,13 +77,14 @@ MANAGER_GROUP_ID=your_manager_group_id
 # Sink Chat (for monitoring)
 SINK_CHAT_ID=your_sink_chat_id
 
-# Tesseract (for OCR)
-TESSERACT_CMD=/usr/bin/tesseract
+# Tesseract (for OCR) - пока не настраиваем
+# TESSERACT_CMD=/usr/bin/tesseract
 ```
 
-5. **Установка Tesseract (для OCR):**
+5. **Tesseract (пропускаем - не настроен в проекте):**
 ```bash
-apt install tesseract-ocr tesseract-ocr-rus -y
+# apt install tesseract-ocr tesseract-ocr-rus -y
+# Пока не настраиваем OCR функциональность
 ```
 
 ## Запуск ботов
