@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 # ------------- helpers / env -------------
-def _csv_to_ids(val: str):
+def _csv_to_ids(val):
     if not val:
         return set()
     out = set()
@@ -91,7 +91,7 @@ def _category_for(channel_id, message_id):
 # ------------- parsing -------------
 PRICE_RE = re.compile(r"^\s*(?P<name>.+?)\s*[-:]\s*(?P<price>[\d\s]{2,})(?P<rest>.*)$")
 
-def _extract_flag(text: str) -> str:
+def _extract_flag(text):
     """Попробовать извлечь флаг (emoji-флаг страны) из строки."""
     try:
         flag_match = re.search(r"[\U0001F1E6-\U0001F1FF]{2}", text)
@@ -99,7 +99,7 @@ def _extract_flag(text: str) -> str:
     except Exception:
         return ""
 
-def parse_lines(text: str) -> List[Tuple[str, int, str]]:
+def parse_lines(text):
     items = []
     for raw in (text or "").splitlines():
         m = PRICE_RE.match(raw)
@@ -148,7 +148,7 @@ def parse_lines(text: str) -> List[Tuple[str, int, str]]:
             items.append((clean_name, price, ""))
     return items
 
-def parse_used_attrs(name: str) -> dict:
+def parse_used_attrs(name):
     s = (name or "").lower()
     attrs = {}
     m = re.search(r"(\d+)\s*(?:год|года|лет|месяц|месяца|недел)", s)
@@ -160,7 +160,7 @@ def parse_used_attrs(name: str) -> dict:
         attrs["kit"] = "no_box"
     return attrs
 
-def norm_key(name: str, flag: str = "") -> str:
+def norm_key(name, flag=""):
     s = (name or "").lower()
     s = re.sub(r"\s+", " ", s).strip()
     # Добавляем флаг в ключ для уникальности
@@ -169,7 +169,7 @@ def norm_key(name: str, flag: str = "") -> str:
     return s
 
 # ------------- upsert -------------
-async def upsert_for_message(channel_id: int, message_id: int, title: str, text: str):
+async def upsert_for_message(channel_id, message_id, title, text):
     now = datetime.utcnow()
     price_field = "price_retail" if channel_id == CHANNEL_ID_STORE else ("price_wholesale" if channel_id == CHANNEL_ID_OPT else None)
     if price_field is None:
