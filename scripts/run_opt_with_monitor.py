@@ -16,7 +16,7 @@ from sqlalchemy import select, update, and_, not_
 from bot_wholesale import dp as dp_opt, bot as bot_opt, get_monitored_message_ids, get_master_message_id
 
 from app_store.db.core import Session, MonitoredPost
-from app_store.repo import Product, ChannelMessage
+from app_store.db.core import Product, ChannelMessage
 
 log = logging.getLogger("opt+monitor")
 logging.basicConfig(level=logging.INFO)
