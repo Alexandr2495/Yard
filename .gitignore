@@ -76,6 +76,7 @@ fix_*.py
 init_*.py
 migrate_*.py
 setup_*.py
+!setup_monitoring.py
 show_*.py
 force_*.py
 build_*.py
