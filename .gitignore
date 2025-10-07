@@ -111,7 +111,6 @@ web/
 
 # Scripts that are not core functionality
 scripts/bootstrap_*.py
-scripts/monitor_*.py
 scripts/db_*.py
 scripts/show_*.py
 scripts/set_*.sh
