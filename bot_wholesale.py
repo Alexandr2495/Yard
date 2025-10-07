@@ -161,7 +161,7 @@ async def set_setting(key, value, description=None, category=None):
         setting = (await s.execute(select(BotSetting).where(BotSetting.key == key))).scalar_one_or_none()
         if setting:
             setting.value = value
-            setting.updated_at = datetime.now(timezone.utc)
+            setting.updated_at = datetime.utcnow()
             if description:
                 setting.description = description
             if category:
@@ -308,7 +308,7 @@ async def add_admin_by_username(username: str, full_name: str = None, added_by: 
                 # Активируем существующего
                 existing.is_active = True
                 existing.added_by = added_by or 0
-                existing.added_at = datetime.now(timezone.utc)
+                existing.added_at = datetime.utcnow()
                 await s.commit()
                 return True, f"Пользователь @{clean_username} восстановлен как админ"
         else:
@@ -319,7 +319,7 @@ async def add_admin_by_username(username: str, full_name: str = None, added_by: 
                 username=clean_username,
                 full_name=full_name,
                 added_by=added_by or 0,
-                added_at=datetime.now(timezone.utc),
+                added_at=datetime.utcnow(),
                 is_active=True,
                 channel_type=channel_type
             )
@@ -1795,7 +1795,7 @@ async def upsert_for_message_rescan(channel_id: int, message_id: int, category: 
     """
     Мини-версия upsert логики для /rescan. Обновляет товары по одному посту.
     """
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
     rows = parse_lines(text)
     keys_in_post = set()
 
@@ -2953,7 +2953,7 @@ async def on_diag(m: Message):
             select(func.count()).select_from(Order).where(
                 and_(
                     Order.order_type == "wholesale",
-                    Order.created_at >= datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+                    Order.created_at >= datetime.utcnow().replace(hour=0, minute=0, second=0, microsecond=0)
                 )
             )
         )).scalar_one()

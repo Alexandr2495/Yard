@@ -23,7 +23,7 @@ logging.basicConfig(level=logging.INFO)
 load_dotenv()
 
 # ------------- helpers / env -------------
-def _csv_to_ids(val):
+def _csv_to_ids(val: str):
     if not val:
         return set()
     out = set()
@@ -89,7 +89,7 @@ def _category_for(channel_id, message_id):
 # Инициализация WATCH будет в main() после загрузки настроек из БД
 
 # ------------- parsing -------------
-PRICE_RE = re.compile(r"^\s*(?P<name>.+?)\s*[-:]\s*(?P<price>[\d\s.]{2,})(?P<rest>.*)$")
+PRICE_RE = re.compile(r"^\s*(?P<name>.+?)\s*[-:]\s*(?P<price>[\d\s]{2,})(?P<rest>.*)$")
 
 def _extract_flag(text: str) -> str:
     """Попробовать извлечь флаг (emoji-флаг страны) из строки."""
@@ -106,33 +106,13 @@ def parse_lines(text: str) -> List[Tuple[str, int, str]]:
         if not m:
             continue
         name = m.group("name").strip()
-        price_str = m.group("price") or ""
+        digits = re.sub(r"\D", "", m.group("price") or "")
         rest = m.group("rest") or ""
         
-        # Нормализация цены: убираем все кроме цифр и точек
-        price_clean = re.sub(r"[^\d.]", "", price_str)
-        
-        # Если есть точка, проверяем - это разделитель тысяч или копейки
-        if "." in price_clean:
-            parts = price_clean.split(".")
-            if len(parts) == 2:
-                # Если после точки 3 цифры - это разделитель тысяч (5.990)
-                if len(parts[1]) == 3:
-                    price_clean = parts[0] + parts[1]
-                # Если после точки 1-2 цифры - это копейки, игнорируем их
-                elif len(parts[1]) <= 2:
-                    price_clean = parts[0]
-                # Если после точки больше 3 цифр - это тоже разделитель тысяч (10.500)
-                else:
-                    price_clean = parts[0] + parts[1]
-            elif len(parts) > 2:
-                # Несколько точек - это разделители тысяч (1.234.567)
-                price_clean = "".join(parts)
-        
-        if not price_clean:
+        if not digits:
             continue
         try:
-            price = int(price_clean)
+            price = int(digits)
         except Exception:
             continue
         if price <= 0:
