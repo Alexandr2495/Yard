@@ -605,7 +605,7 @@ async def fetch_products_page(group_message_id: int, is_used: bool, page: int, p
                 Product.group_message_id.in_(multi_message_ids),
                 Product.is_used == is_used,
                 Product.available == True,
-                Product.price_retail.isnot(None),
+                Product.price_retail != None,
                 Product.price_retail > 0,
             )
         else:
@@ -615,7 +615,7 @@ async def fetch_products_page(group_message_id: int, is_used: bool, page: int, p
                 Product.group_message_id == group_message_id,
                 Product.is_used == is_used,
                 Product.available == True,
-                Product.price_retail.isnot(None),
+                Product.price_retail != None,
                 Product.price_retail > 0,
             )
         
@@ -1684,7 +1684,7 @@ async def on_diag(m: Message):
                 and_(
                     Product.channel_id == CHANNEL_ID_STORE,
                     Product.available == True,
-                    Product.price_retail.isnot(None)
+                    Product.price_retail != None
                 )
             )
         )).scalar_one()
@@ -1705,7 +1705,7 @@ async def on_diag(m: Message):
         
         # Статистика по корзинам
         active_carts = (await s.execute(
-            select(func.count()).select_from(Cart).where(Cart.items.isnot(None))
+            select(func.count()).select_from(Cart).where(Cart.items != None)
         )).scalar_one()
         
         # Топ категории
@@ -1723,7 +1723,7 @@ async def on_diag(m: Message):
                 and_(
                     MonitoredPost.channel_id == CHANNEL_ID_STORE,
                     Product.available == True,
-                    Product.price_retail.isnot(None)
+                    Product.price_retail != None
                 )
             )
             .group_by(MonitoredPost.category)

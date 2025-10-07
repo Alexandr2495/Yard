@@ -625,7 +625,7 @@ async def get_filter_counts(user_id: int = None, current_filters: Dict[str, str]
                     Product.channel_id == CHANNEL_ID_OPT,
                     Product.group_message_id == iphone_post.message_id,
                     Product.available == True,
-                    Product.price_wholesale.isnot(None)
+                    Product.price_wholesale != None
                 )
             )
             
@@ -824,7 +824,7 @@ async def fetch_products_page(group_message_id: int, is_used: bool, page: int, p
                 Product.group_message_id.in_(multi_message_ids),
                 Product.is_used == is_used,
                 Product.available == True,
-                Product.price_wholesale.isnot(None),
+                Product.price_wholesale != None,
             )
         else:
             # Поиск в одном посте
@@ -833,7 +833,7 @@ async def fetch_products_page(group_message_id: int, is_used: bool, page: int, p
                 Product.group_message_id == group_message_id,
                 Product.is_used == is_used,
                 Product.available == True,
-                Product.price_wholesale.isnot(None),
+                Product.price_wholesale != None,
             )
         
         total = (await s.execute(select(func.count()).select_from(Product).where(where_clause))).scalar_one()
@@ -2558,7 +2558,7 @@ async def show_iphone_products_with_filters(m: Message, filters: Dict[str, str])
                     Product.channel_id == CHANNEL_ID_OPT,
                     Product.group_message_id == iphone_post.message_id,
                     Product.available == True,
-                    Product.price_wholesale.isnot(None)
+                    Product.price_wholesale != None
                 )
             )
             
@@ -2676,7 +2676,7 @@ async def show_iphone_products(m: Message, show_all: bool = True, show_used: boo
                 Product.channel_id == CHANNEL_ID_OPT,
                 Product.group_message_id.in_(message_ids),
                 Product.available == True,
-                Product.price_wholesale.isnot(None),
+                Product.price_wholesale != None,
             )
         else:
             # Фильтруем по is_used
@@ -2685,7 +2685,7 @@ async def show_iphone_products(m: Message, show_all: bool = True, show_used: boo
                 Product.group_message_id.in_(message_ids),
                 Product.is_used == show_used,
                 Product.available == True,
-                Product.price_wholesale.isnot(None),
+                Product.price_wholesale != None,
             )
         
         items = list((await s.execute(
@@ -2791,7 +2791,7 @@ async def show_iphone_products_by_model(m: Message, model: str):
             Product.channel_id == CHANNEL_ID_OPT,
             Product.group_message_id.in_(message_ids),
             Product.available == True,
-            Product.price_wholesale.isnot(None),
+            Product.price_wholesale != None,
             or_(
                 Product.name.ilike(f'%{model}%'),
                 Product.category.ilike(f'%{model}%')
@@ -2841,7 +2841,7 @@ async def show_iphone_products_by_memory(m: Message, memory: str):
             Product.channel_id == CHANNEL_ID_OPT,
             Product.group_message_id.in_(message_ids),
             Product.available == True,
-            Product.price_wholesale.isnot(None),
+            Product.price_wholesale != None,
             or_(
                 Product.name.ilike(f'%{memory}%'),
                 Product.category.ilike(f'%{memory}%')
@@ -2951,7 +2951,7 @@ async def on_diag(m: Message):
                 and_(
                     Product.channel_id == CHANNEL_ID_OPT,
                     Product.available == True,
-                    Product.price_wholesale.isnot(None)
+                    Product.price_wholesale != None
                 )
             )
         )).scalar_one()
@@ -2972,7 +2972,7 @@ async def on_diag(m: Message):
         
         # Статистика по корзинам
         active_carts = (await s.execute(
-            select(func.count()).select_from(Cart).where(Cart.items.isnot(None))
+            select(func.count()).select_from(Cart).where(Cart.items != None)
         )).scalar_one()
         
         # Топ категории
@@ -2990,7 +2990,7 @@ async def on_diag(m: Message):
                 and_(
                     MonitoredPost.channel_id == CHANNEL_ID_OPT,
                     Product.available == True,
-                    Product.price_wholesale.isnot(None)
+                    Product.price_wholesale != None
                 )
             )
             .group_by(MonitoredPost.category)
