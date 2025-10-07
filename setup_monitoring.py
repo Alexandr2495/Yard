@@ -6,7 +6,11 @@ import os
 import asyncio
 from dotenv import load_dotenv
 from app_store.db.core import init_models
-from app_store.db.repo import set_monitored_message_ids
+# Импортируем функцию из bot_retail2.py
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+from bot_retail2 import set_monitored_message_ids
 
 load_dotenv()
 
