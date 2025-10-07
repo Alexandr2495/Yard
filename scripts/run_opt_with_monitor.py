@@ -170,7 +170,7 @@ def norm_key(name: str, flag: str = "") -> str:
 
 # ------------- upsert -------------
 async def upsert_for_message(channel_id: int, message_id: int, title: str, text: str):
-    now = datetime.now(timezone.utc)
+    now = datetime.utcnow()
     price_field = "price_retail" if channel_id == CHANNEL_ID_STORE else ("price_wholesale" if channel_id == CHANNEL_ID_OPT else None)
     if price_field is None:
         return
