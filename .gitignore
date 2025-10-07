@@ -84,7 +84,9 @@ channel_*.py
 ocr_*.py
 privacy_*.py
 bot_with_*.py
-run_*.py
+run_bot_*.py
+run_retail_*.py
+run_wholesale_*.py
 start_*.py
 quick_*.py
 check_*.py
