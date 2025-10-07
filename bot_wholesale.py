@@ -884,10 +884,7 @@ async def cb_category(c: CallbackQuery):
         cats = await fetch_categories()
         max_row_chars = 34 if any(len(t) > 16 for t, _ in cats) else 40
         kb = adaptive_kb(cats, max_per_row=2, max_row_chars=max_row_chars)
-        try:
-            await c.message.edit_text("В этой категории сейчас нет товаров.", reply_markup=kb)
-        except TelegramBadRequest:
-            await c.message.edit_reply_markup(reply_markup=kb)
+        await safe_edit_message(c.message, "В этой категории сейчас нет товаров.", reply_markup=kb)
         await c.answer()
         return
 
@@ -1693,6 +1690,21 @@ def norm_key(name: str, flag: str = "") -> str:
     if flag:
         s = f"{s}|{flag}"
     return s
+
+async def safe_edit_message(message, text=None, reply_markup=None, parse_mode=None):
+    """Безопасное редактирование сообщения с обработкой ошибок"""
+    try:
+        if text is not None:
+            await message.edit_text(text, reply_markup=reply_markup, parse_mode=parse_mode)
+        elif reply_markup is not None:
+            await message.edit_reply_markup(reply_markup=reply_markup)
+    except TelegramBadRequest as e:
+        if "message is not modified" in str(e):
+            # Сообщение уже имеет нужное содержимое, игнорируем
+            pass
+        else:
+            # Другие ошибки - пробрасываем дальше
+            raise
 
 def _now_ms() -> int:
     return int(time.time() * 1000)
