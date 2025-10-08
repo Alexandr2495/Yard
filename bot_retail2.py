@@ -148,7 +148,7 @@ async def set_setting(key, value, description=None, category=None):
         setting = (await s.execute(select(BotSetting).where(BotSetting.key == key))).scalar_one_or_none()
         if setting:
             setting.value = value
-            setting.updated_at = datetime.now(timezone.utc)
+            setting.updated_at = datetime.utcnow()
             if description:
                 setting.description = description
             if category:
@@ -3730,6 +3730,9 @@ async def error_handler(event, exception):
         elif "group chat was upgraded" in str(exception):
             log.warning("Group upgraded to supergroup, ignoring")
             return True
+    elif "can't subtract offset-naive and offset-aware datetimes" in str(exception):
+        log.warning("Timezone error, ignoring")
+        return True
     else:
         log.error(f"Unhandled error: {exception}")
     return False
