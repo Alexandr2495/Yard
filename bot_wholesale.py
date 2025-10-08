@@ -83,7 +83,7 @@ MANAGER_USER_IDS = {
 
 # Система состояний фильтров iPhone
 # Структура: user_id -> dict(active_filters, filter_history)
-IPHONE_FILTERS = {}  # type: Dict[int, Dict[str, Any]]
+# IPHONE_FILTERS = {}  # type: Dict[int, Dict[str, Any]]
 
 # -----------------------------------------------------------------------------
 # Хранилище настроек (bot_settings) и шаблоны
@@ -498,15 +498,15 @@ def paginate_bar(page: int, pages: int, prev_cb: str, info_cb: str, next_cb: str
 def fmt_price(p: int) -> str:
     return f"{p:,}".replace(",", " ")
 
-def get_iphone_filter_state(user_id: int) -> Dict[str, Any]:
-    """Получить состояние фильтров пользователя"""
-    if user_id not in IPHONE_FILTERS:
-        IPHONE_FILTERS[user_id] = {
-            "active_filters": {},
-            "filter_history": [],
-            "current_step": "main"
-        }
-    return IPHONE_FILTERS[user_id]
+# def get_iphone_filter_state(user_id: int) -> Dict[str, Any]:
+#     """Получить состояние фильтров пользователя"""
+#     if user_id not in IPHONE_FILTERS:
+#         IPHONE_FILTERS[user_id] = {
+#             "active_filters": {},
+#             "filter_history": [],
+#             "current_step": "main"
+#         }
+#     return IPHONE_FILTERS[user_id]
 
 def set_iphone_filter(user_id: int, filter_type: str, filter_value: str) -> None:
     """Установить фильтр"""
@@ -791,7 +791,7 @@ async def fetch_categories() -> list[tuple[str, str]]:
             buttons.append((label, f"c|{message_ids[0]}|{1 if is_used else 0}|1|multi|{','.join(map(str, message_ids))}"))
     
     # Добавляем специальную кнопку для iPhone с фильтрацией
-    buttons.append(("📱 iPhone (с фильтрацией)", "iphone_filters"))
+    # buttons.append(("📱 iPhone (с фильтрацией)", "iphone_filters"))
     
     return buttons
 
@@ -844,25 +844,25 @@ async def fetch_products_page(group_message_id: int, is_used: bool, page: int, p
         items = list((await s.execute(q)).scalars())
     return items, total, pages, page
 
-@dp.callback_query(F.data == "iphone_filters")
-async def cb_iphone_filters(c: CallbackQuery):
-    """Обработчик для кнопки iPhone с фильтрацией"""
-    try:
-        user_id = c.from_user.id if c.from_user else 0
-        text = "📱 <b>Фильтрация iPhone</b>\n\n"
-        text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}\n\n"
-        text += "Выберите тип фильтрации:"
-        
-        await c.message.edit_text(text, parse_mode="HTML")
-        # Отправляем новое сообщение с клавиатурой фильтрации
-        await c.message.answer(
-            text,
-            parse_mode="HTML",
-            reply_markup=filter_menu_kb(user_id)
-        )
-    except Exception as e:
-        log.error(f"Error in iphone_filters: {e}")
-        await c.answer("Ошибка")
+# @dp.callback_query(F.data == "iphone_filters")
+# async def cb_iphone_filters(c: CallbackQuery):
+#     """Обработчик для кнопки iPhone с фильтрацией"""
+#     try:
+#         user_id = c.from_user.id if c.from_user else 0
+#         text = "📱 <b>Фильтрация iPhone</b>\n\n"
+#         text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}\n\n"
+#         text += "Выберите тип фильтрации:"
+#         
+#         await c.message.edit_text(text, parse_mode="HTML")
+#         # Отправляем новое сообщение с клавиатурой фильтрации
+#         await c.message.answer(
+#             text,
+#             parse_mode="HTML",
+#             reply_markup=filter_menu_kb(user_id)
+#         )
+#     except Exception as e:
+#         log.error(f"Error in iphone_filters: {e}")
+#         await c.answer("Ошибка")
 
 @dp.callback_query(F.data.startswith("c|"))
 async def cb_category(c: CallbackQuery):
@@ -1017,23 +1017,23 @@ async def cb_back_to_filters(c: CallbackQuery):
         await c.answer("Ошибка")
 
 # Обработчики пагинации iPhone
-@dp.callback_query(F.data == "iphone_prev")
-async def cb_iphone_prev(c: CallbackQuery):
-    """Предыдущая страница iPhone"""
-    # TODO: Реализовать навигацию по страницам
-    await c.answer("Функция в разработке")
+# @dp.callback_query(F.data == "iphone_prev")
+# async def cb_iphone_prev(c: CallbackQuery):
+#     """Предыдущая страница iPhone"""
+#     # TODO: Реализовать навигацию по страницам
+#     await c.answer("Функция в разработке")
 
-@dp.callback_query(F.data == "iphone_next")
-async def cb_iphone_next(c: CallbackQuery):
-    """Следующая страница iPhone"""
-    # TODO: Реализовать навигацию по страницам
-    await c.answer("Функция в разработке")
+# @dp.callback_query(F.data == "iphone_next")
+# async def cb_iphone_next(c: CallbackQuery):
+#     """Следующая страница iPhone"""
+#     # TODO: Реализовать навигацию по страницам
+#     await c.answer("Функция в разработке")
 
-@dp.callback_query(F.data == "iphone_info")
-async def cb_iphone_info(c: CallbackQuery):
-    """Информация о странице iPhone"""
-    # TODO: Показать информацию о текущей странице
-    await c.answer("Функция в разработке")
+# @dp.callback_query(F.data == "iphone_info")
+# async def cb_iphone_info(c: CallbackQuery):
+#     """Информация о странице iPhone"""
+#     # TODO: Показать информацию о текущей странице
+#     await c.answer("Функция в разработке")
 
 # Обработчики для согласия на обработку ПД
 @dp.callback_query(F.data == "consent_agree")
@@ -1984,7 +1984,7 @@ def filter_menu_kb(user_id: int = None) -> ReplyKeyboardMarkup:
         model_text = "📱 По модели"
         if "model" in state["active_filters"]:
             model_text = f"📱 {state['active_filters']['model']}"
-        keyboard.append([KeyboardButton(text=model_text), KeyboardButton(text="💾 По памяти")])
+        keyboard.append([KeyboardButton(text=model_text)])
         
         # Кнопка памяти - показывает выбранную или дефолтную  
         memory_text = "💾 По памяти"
@@ -1996,7 +1996,7 @@ def filter_menu_kb(user_id: int = None) -> ReplyKeyboardMarkup:
         country_text = BTN_FILTER_COUNTRY
         if "country" in state["active_filters"]:
             country_text = f"🌍 {state['active_filters']['country']}"
-        keyboard.append([KeyboardButton(text=country_text), KeyboardButton(text=BTN_FILTER_COLOR)])
+        keyboard.append([KeyboardButton(text=country_text)])
         
         # Кнопка цвета - показывает выбранную или дефолтную
         color_text = BTN_FILTER_COLOR
@@ -2437,23 +2437,23 @@ async def on_iphone_color_group(m: Message):
         await show_iphone_products_with_filters(m, state["active_filters"])
 
 # Обработчики для интерактивных кнопок фильтров
-@dp.message(F.text.regexp(r"^📱 (iPhone \d+)$"))
-async def on_iphone_model_toggle(m: Message):
-    """Переключение фильтра модели iPhone"""
-    user_id = m.from_user.id if m.from_user else 0
-    model = m.text.replace("📱 ", "").strip()
-    state = get_iphone_filter_state(user_id)
-    
-    # Если уже выбран этот фильтр - снимаем его
-    if "model" in state["active_filters"] and state["active_filters"]["model"] == model:
-        clear_iphone_filter(user_id, "model")
-        # Показываем все iPhone без фильтра модели
-        await show_iphone_products(m, show_all=True)
-    else:
-        # Устанавливаем новый фильтр
-        set_iphone_filter(user_id, "model", model)
-        state = get_iphone_filter_state(user_id)
-        await show_iphone_products_with_filters(m, state["active_filters"])
+# @dp.message(F.text.regexp(r"^📱 (iPhone \d+)$"))
+# async def on_iphone_model_toggle(m: Message):
+#     """Переключение фильтра модели iPhone"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     model = m.text.replace("📱 ", "").strip()
+#     state = get_iphone_filter_state(user_id)
+#     
+#     # Если уже выбран этот фильтр - снимаем его
+#     if "model" in state["active_filters"] and state["active_filters"]["model"] == model:
+#         clear_iphone_filter(user_id, "model")
+#         # Показываем все iPhone без фильтра модели
+#         await show_iphone_products(m, show_all=True)
+#     else:
+#         # Устанавливаем новый фильтр
+#         set_iphone_filter(user_id, "model", model)
+#         state = get_iphone_filter_state(user_id)
+#         await show_iphone_products_with_filters(m, state["active_filters"])
 
 @dp.message(F.text.regexp(r"^💾 (\d+GB)$"))
 async def on_iphone_memory_toggle(m: Message):
