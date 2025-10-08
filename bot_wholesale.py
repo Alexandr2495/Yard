@@ -3709,7 +3709,7 @@ async def update_main_menu_for_user(user_id: int, bot: Bot):
 
 @dp.callback_query(F.data == "settings:contacts:edit")
 async def settings_contacts_edit(c: CallbackQuery):
-    if not c.from_user or c.from_user.id not in MANAGER_USER_IDS:
+    if not c.from_user or not await _is_manager(c.from_user.id, c.from_user.username, 'wholesale'):
         await c.answer("⛔ Недостаточно прав.", show_alert=True)
         return
     PENDING_CONTACTS_EDIT[c.from_user.id] = True
@@ -3819,7 +3819,7 @@ async def settings_template_full(c: CallbackQuery):
 
 @dp.callback_query(F.data.regexp(r"^settings:tpl_edit:(.+)$"))
 async def settings_template_edit(c: CallbackQuery):
-    if not c.from_user or c.from_user.id not in MANAGER_USER_IDS:
+    if not c.from_user or not await _is_manager(c.from_user.id, c.from_user.username, 'wholesale'):
         await c.answer("⛔ Недостаточно прав.", show_alert=True)
         return
     name = c.data.split(":")[2]
@@ -4710,7 +4710,7 @@ async def on_list_admins(m: Message):
 @dp.message(Command("test_button_length"))
 async def on_test_button_length(m: Message):
     """Тестовая команда для проверки адаптивной длины кнопок"""
-    if not m.from_user or m.from_user.id not in MANAGER_USER_IDS:
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'wholesale'):
         await m.answer("⛔ Недостаточно прав.")
         return
     
@@ -5193,7 +5193,7 @@ async def on_possible_settings_text(m: Message):
 # Обработчики кнопок отмены для режимов редактирования
 @dp.callback_query(F.data == "settings:cancel_contacts")
 async def cancel_contacts_edit(c: CallbackQuery):
-    if not c.from_user or c.from_user.id not in MANAGER_USER_IDS:
+    if not c.from_user or not await _is_manager(c.from_user.id, c.from_user.username, 'wholesale'):
         await c.answer("⛔ Недостаточно прав.", show_alert=True)
         return
     PENDING_CONTACTS_EDIT.pop(c.from_user.id, None)
@@ -5202,7 +5202,7 @@ async def cancel_contacts_edit(c: CallbackQuery):
 
 @dp.callback_query(F.data == "settings:cancel_template")
 async def cancel_template_edit(c: CallbackQuery):
-    if not c.from_user or c.from_user.id not in MANAGER_USER_IDS:
+    if not c.from_user or not await _is_manager(c.from_user.id, c.from_user.username, 'wholesale'):
         await c.answer("⛔ Недостаточно прав.", show_alert=True)
         return
     PENDING_TEMPLATE_EDIT.pop(c.from_user.id, None)
