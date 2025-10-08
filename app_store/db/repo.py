@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Iterable
 from sqlalchemy import select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -20,7 +20,7 @@ async def save_channel_message(
         )
     )).scalar_one_or_none()
 
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     if row is None:
         s.add(ChannelMessage(
             channel_id=channel_id,
@@ -66,7 +66,7 @@ async def upsert_products_from_group(
     existing_by_key = {p.key: p for p in existing}
 
     # upsert / reactivate
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     for name, key, price in normalized:
         if key in existing_by_key:
             # Товар уже существует - обновляем только нужную цену
@@ -175,7 +175,7 @@ async def update_order_status(
             status=status,
             reason=reason,
             serial_number=serial_number,
-            updated_at=datetime.utcnow()
+            updated_at=datetime.now(UTC)
         )
     )
     return result.rowcount > 0

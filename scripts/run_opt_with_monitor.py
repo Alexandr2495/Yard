@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os, re, asyncio, logging, json, json, sys
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 from typing import List, Tuple
 
 # Добавляем родительскую директорию в путь для импорта
@@ -170,7 +170,7 @@ def norm_key(name, flag=""):
 
 # ------------- upsert -------------
 async def upsert_for_message(channel_id, message_id, title, text):
-    now = datetime.utcnow()
+    now = datetime.now(UTC)
     price_field = "price_retail" if channel_id == CHANNEL_ID_STORE else ("price_wholesale" if channel_id == CHANNEL_ID_OPT else None)
     if price_field is None:
         return

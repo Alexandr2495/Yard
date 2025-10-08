@@ -4,7 +4,7 @@
 Соответствует требованиям 152-ФЗ "О персональных данных"
 """
 
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import Optional, Dict, Any
 from sqlalchemy import select, update
 from sqlalchemy.orm import selectinload
@@ -47,18 +47,18 @@ class ConsentManager:
             if consent:
                 # Обновляем существующую запись
                 consent.consent_given = True
-                consent.consent_date = datetime.utcnow()
+                consent.consent_date = datetime.now(UTC)
                 consent.consent_revoked = False
                 consent.revocation_date = None
                 consent.revocation_reason = None
-                consent.updated_at = datetime.utcnow()
+                consent.updated_at = datetime.now(UTC)
             else:
                 # Создаем новую запись
                 consent = UserConsent(
                     user_id=user_id,
                     username=username,
                     consent_given=True,
-                    consent_date=datetime.utcnow(),
+                    consent_date=datetime.now(UTC),
                     consent_version="1.0",
                     ip_address=ip_address,
                     user_agent=user_agent
@@ -79,9 +79,9 @@ class ConsentManager:
             
             if consent:
                 consent.consent_revoked = True
-                consent.revocation_date = datetime.utcnow()
+                consent.revocation_date = datetime.now(UTC)
                 consent.revocation_reason = reason
-                consent.updated_at = datetime.utcnow()
+                consent.updated_at = datetime.now(UTC)
                 await session.commit()
                 return True
             return False
@@ -122,8 +122,8 @@ class ConsentManager:
             
             if user_consent:
                 user_consent.marketing_consent = consent
-                user_consent.marketing_consent_date = datetime.utcnow() if consent else None
-                user_consent.updated_at = datetime.utcnow()
+                user_consent.marketing_consent_date = datetime.now(UTC) if consent else None
+                user_consent.updated_at = datetime.now(UTC)
                 await session.commit()
                 return True
             return False
