@@ -109,8 +109,8 @@ async def get_categories(s: AsyncSession, channel_id: int, price_type: str = "re
         select(Product.category).where(
             Product.channel_id == channel_id,
             Product.available == True,
-            price_field.isnot(None),
-            Product.category.isnot(None)
+            price_field != None,
+            Product.category != None
         ).distinct()
     )
     return [cat for cat in result.scalars() if cat]
@@ -122,7 +122,7 @@ async def get_products_by_category(s: AsyncSession, channel_id: int, category: s
             Product.channel_id == channel_id,
             Product.category == category,
             Product.available == True,
-            price_field.isnot(None)
+            price_field != None
         ).order_by(Product.name)
     )
     return list(result.scalars())
@@ -251,7 +251,7 @@ async def get_products_by_category(
                 Product.channel_id == channel_id,
                 Product.category == category,
                 Product.available == True,
-                price_field.isnot(None)
+                price_field != None
             )
         )
         .order_by(Product.name)

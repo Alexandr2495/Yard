@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-from datetime import datetime
+from datetime import datetime, UTC
 
 from dotenv import load_dotenv
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncAttrs
@@ -89,8 +89,8 @@ class MonitoredPost(Base):
     category: Mapped[str | None] = mapped_column(String(100), default=None, index=True)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
 
     __table_args__ = (
         UniqueConstraint("channel_id", "message_id", name="uq_monitored_post"),
@@ -105,7 +105,7 @@ class BotSetting(Base):
     value: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str | None] = mapped_column(Text, default=None)  # Описание для пользователя
     category: Mapped[str | None] = mapped_column(String(50), default=None)  # Категория настройки
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
 
 class BotAdmin(Base):
     __tablename__ = "bot_admins"
@@ -114,7 +114,7 @@ class BotAdmin(Base):
     username: Mapped[str | None] = mapped_column(String(100), default=None)
     full_name: Mapped[str | None] = mapped_column(String(200), default=None)
     added_by: Mapped[int] = mapped_column(BigInteger, nullable=False)  # Кто добавил
-    added_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    added_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     channel_type: Mapped[str] = mapped_column(String(20), nullable=False, default='wholesale')  # wholesale или retail
 
@@ -144,8 +144,8 @@ class Order(Base):
     decision_message_id: Mapped[int | None] = mapped_column(Integer, default=None)
     manager_id: Mapped[int | None] = mapped_column(BigInteger, default=None)
 
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
 
 
 class Cart(Base):
@@ -153,8 +153,8 @@ class Cart(Base):
     
     user_id: Mapped[int] = mapped_column(BigInteger, primary_key=True, index=True)
     items_json: Mapped[dict] = mapped_column(JSONB, nullable=False, default=dict)
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
     
     def __repr__(self):
         return f"<Cart(user_id={self.user_id}, items_count={len(self.items_json)})>"
@@ -195,8 +195,8 @@ class UserConsent(Base):
     ip_address: Mapped[str | None] = mapped_column(String(45), default=None)
     user_agent: Mapped[str | None] = mapped_column(Text, default=None)
     
-    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
+    updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, default=lambda: datetime.now(UTC).replace(tzinfo=None))
 
 
 class PrivacyPolicy(Base):
