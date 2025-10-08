@@ -148,7 +148,7 @@ async def set_setting(key, value, description=None, category=None):
         setting = (await s.execute(select(BotSetting).where(BotSetting.key == key))).scalar_one_or_none()
         if setting:
             setting.value = value
-            setting.updated_at = datetime.now(UTC)
+            setting.updated_at = datetime.now(UTC).replace(tzinfo=None)
             if description:
                 setting.description = description
             if category:
@@ -311,7 +311,7 @@ async def add_admin_by_username(username: str, full_name: str = None, added_by: 
                 # Активируем существующего
                 existing.is_active = True
                 existing.added_by = added_by or 0
-                existing.added_at = datetime.now(UTC)
+                existing.added_at = datetime.now(UTC).replace(tzinfo=None)
                 await s.commit()
                 return True, f"Пользователь @{clean_username} восстановлен как админ"
         else:
@@ -322,7 +322,7 @@ async def add_admin_by_username(username: str, full_name: str = None, added_by: 
                 username=clean_username,
                 full_name=full_name,
                 added_by=added_by or 0,
-                added_at=datetime.now(UTC),
+                added_at=datetime.now(UTC).replace(tzinfo=None),
                 is_active=True,
                 channel_type=channel_type
             )

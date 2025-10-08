@@ -20,7 +20,7 @@ async def save_channel_message(
         )
     )).scalar_one_or_none()
 
-    now = datetime.now(UTC)
+    now = datetime.now(UTC).replace(tzinfo=None)
     if row is None:
         s.add(ChannelMessage(
             channel_id=channel_id,
@@ -66,7 +66,7 @@ async def upsert_products_from_group(
     existing_by_key = {p.key: p for p in existing}
 
     # upsert / reactivate
-    now = datetime.now(UTC)
+    now = datetime.now(UTC).replace(tzinfo=None)
     for name, key, price in normalized:
         if key in existing_by_key:
             # Товар уже существует - обновляем только нужную цену
@@ -175,7 +175,7 @@ async def update_order_status(
             status=status,
             reason=reason,
             serial_number=serial_number,
-            updated_at=datetime.now(UTC)
+            updated_at=datetime.now(UTC).replace(tzinfo=None)
         )
     )
     return result.rowcount > 0

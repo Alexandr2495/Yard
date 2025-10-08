@@ -47,18 +47,18 @@ class ConsentManager:
             if consent:
                 # Обновляем существующую запись
                 consent.consent_given = True
-                consent.consent_date = datetime.now(UTC)
+                consent.consent_date = datetime.now(UTC).replace(tzinfo=None)
                 consent.consent_revoked = False
                 consent.revocation_date = None
                 consent.revocation_reason = None
-                consent.updated_at = datetime.now(UTC)
+                consent.updated_at = datetime.now(UTC).replace(tzinfo=None)
             else:
                 # Создаем новую запись
                 consent = UserConsent(
                     user_id=user_id,
                     username=username,
                     consent_given=True,
-                    consent_date=datetime.now(UTC),
+                    consent_date=datetime.now(UTC).replace(tzinfo=None),
                     consent_version="1.0",
                     ip_address=ip_address,
                     user_agent=user_agent
@@ -79,9 +79,9 @@ class ConsentManager:
             
             if consent:
                 consent.consent_revoked = True
-                consent.revocation_date = datetime.now(UTC)
+                consent.revocation_date = datetime.now(UTC).replace(tzinfo=None)
                 consent.revocation_reason = reason
-                consent.updated_at = datetime.now(UTC)
+                consent.updated_at = datetime.now(UTC).replace(tzinfo=None)
                 await session.commit()
                 return True
             return False
@@ -122,7 +122,7 @@ class ConsentManager:
             
             if user_consent:
                 user_consent.marketing_consent = consent
-                user_consent.marketing_consent_date = datetime.now(UTC) if consent else None
+                user_consent.marketing_consent_date = datetime.now(UTC).replace(tzinfo=None) if consent else None
                 user_consent.updated_at = datetime.now(UTC)
                 await session.commit()
                 return True
