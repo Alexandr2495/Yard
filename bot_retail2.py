@@ -33,7 +33,7 @@ from aiogram.types import (
     ReplyKeyboardMarkup,
     KeyboardButton,
 )
-from aiogram.exceptions import TelegramAPIError, TelegramRetryAfter, TelegramBadRequest
+from aiogram.exceptions import TelegramAPIError, TelegramRetryAfter, TelegramBadRequest, TelegramMigrateToChat
 
 from sqlalchemy import select, func, text, and_, or_, update, not_
 
@@ -3716,11 +3716,34 @@ async def on_possible_settings_text(m: Message):
                     await m.answer(f"❌ Ошибка обновления категории: {e}")
             return
 
+# Глобальный обработчик ошибок
+@dp.error()
+async def error_handler(event, exception):
+    """Обработка ошибок"""
+    if isinstance(exception, TelegramMigrateToChat):
+        log.warning(f"Chat migrated to supergroup: {exception.migrate_to_chat_id}")
+        return True  # Игнорируем ошибку
+    elif isinstance(exception, TelegramBadRequest):
+        if "message is not modified" in str(exception):
+            log.warning("Message not modified, ignoring")
+            return True
+        elif "group chat was upgraded" in str(exception):
+            log.warning("Group upgraded to supergroup, ignoring")
+            return True
+    else:
+        log.error(f"Unhandled error: {exception}")
+    return False
+
 # Обработчик неизвестных сообщений
 @dp.message()
 async def handle_unknown_message(m: Message):
     """Обработка неизвестных сообщений"""
     log.info(f"Unknown message from user {m.from_user.id if m.from_user else 'unknown'}: {m.text}")
+    
+    # Проверяем, что это личное сообщение (не группа)
+    if m.chat.type != "private":
+        log.info(f"Ignoring message from {m.chat.type} chat {m.chat.id}")
+        return
     
     # Если это команда /start, но не обработалась выше
     if m.text and m.text.startswith('/start'):
