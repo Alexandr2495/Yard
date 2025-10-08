@@ -508,216 +508,216 @@ def fmt_price(p: int) -> str:
 #         }
 #     return IPHONE_FILTERS[user_id]
 
-def set_iphone_filter(user_id: int, filter_type: str, filter_value: str) -> None:
-    """Установить фильтр"""
-    state = get_iphone_filter_state(user_id)
-    state["active_filters"][filter_type] = filter_value
-    state["filter_history"].append({"type": filter_type, "value": filter_value})
+# def set_iphone_filter(user_id: int, filter_type: str, filter_value: str) -> None:
+#     """Установить фильтр"""
+#     state = get_iphone_filter_state(user_id)
+#     state["active_filters"][filter_type] = filter_value
+#     state["filter_history"].append({"type": filter_type, "value": filter_value})
 
-def clear_iphone_filter(user_id: int, filter_type: str = None) -> None:
-    """Сбросить фильтр или все фильтры"""
-    state = get_iphone_filter_state(user_id)
-    if filter_type:
-        state["active_filters"].pop(filter_type, None)
-        # Удаляем из истории
-        state["filter_history"] = [f for f in state["filter_history"] if f["type"] != filter_type]
-    else:
-        state["active_filters"] = {}
-        state["filter_history"] = []
-        state["current_step"] = "main"
+# def clear_iphone_filter(user_id: int, filter_type: str = None) -> None:
+#     """Сбросить фильтр или все фильтры"""
+#     state = get_iphone_filter_state(user_id)
+#     if filter_type:
+#         state["active_filters"].pop(filter_type, None)
+#         # Удаляем из истории
+#         state["filter_history"] = [f for f in state["filter_history"] if f["type"] != filter_type]
+#     else:
+#         state["active_filters"] = {}
+#         state["filter_history"] = []
+#         state["current_step"] = "main"
 
-def get_iphone_filter_summary(user_id: int) -> str:
-    """Получить краткое описание активных фильтров"""
-    state = get_iphone_filter_state(user_id)
-    if not state["active_filters"]:
-        return "Фильтры не применены"
+# def get_iphone_filter_summary(user_id: int) -> str:
+#     """Получить краткое описание активных фильтров"""
+#     state = get_iphone_filter_state(user_id)
+#     if not state["active_filters"]:
+#         return "Фильтры не применены"
     
-    parts = []
-    for filter_type, value in state["active_filters"].items():
-        if filter_type == "model":
-            parts.append(f"Модель: {value}")
-        elif filter_type == "memory":
-            parts.append(f"Память: {value}")
-        elif filter_type == "condition":
-            parts.append(f"Состояние: {value}")
-        elif filter_type == "country":
-            parts.append(f"Страна: {value}")
-        elif filter_type == "color":
-            parts.append(f"Цвет: {value}")
+#     parts = []
+#     for filter_type, value in state["active_filters"].items():
+#         if filter_type == "model":
+#             parts.append(f"Модель: {value}")
+#         elif filter_type == "memory":
+#             parts.append(f"Память: {value}")
+#         elif filter_type == "condition":
+#             parts.append(f"Состояние: {value}")
+#         elif filter_type == "country":
+#             parts.append(f"Страна: {value}")
+#         elif filter_type == "color":
+#             parts.append(f"Цвет: {value}")
     
-    return " | ".join(parts)
+#     return " | ".join(parts)
 
-def get_iphone_model_groups() -> Dict[str, List[str]]:
-    """Получить группы моделей iPhone для фильтрации"""
-    return {
-        "16 Pro/Pro Max": ["16 Pro", "16 Pro Max"],
-        "16/16 Plus": ["16", "16 Plus"],
-        "15 Pro/Pro Max": ["15 Pro", "15 Pro Max"],
-        "15/15 Plus": ["15", "15 Plus"],
-        "14/14 Plus": ["14", "14 Plus"],
-        "13": ["13"],
-        "12": ["12"],
-        "11": ["11"],
-        "SE": ["SE"],
-        "16e": ["16e"],
-        "17 Pro": ["17 Pro"]
-    }
+# def get_iphone_model_groups() -> Dict[str, List[str]]:
+#     """Получить группы моделей iPhone для фильтрации"""
+#     return {
+#         "16 Pro/Pro Max": ["16 Pro", "16 Pro Max"],
+#         "16/16 Plus": ["16", "16 Plus"],
+#         "15 Pro/Pro Max": ["15 Pro", "15 Pro Max"],
+#         "15/15 Plus": ["15", "15 Plus"],
+#         "14/14 Plus": ["14", "14 Plus"],
+#         "13": ["13"],
+#         "12": ["12"],
+#         "11": ["11"],
+#         "SE": ["SE"],
+#         "16e": ["16e"],
+#         "17 Pro": ["17 Pro"]
+#     }
 
-def get_iphone_memory_groups() -> Dict[str, List[str]]:
-    """Получить группы объемов памяти для фильтрации"""
-    return {
-        "64GB": ["64"],
-        "128GB": ["128"],
-        "256GB": ["256"],
-        "512GB": ["512"],
-        "1TB": ["1tb"]
-    }
+# def get_iphone_memory_groups() -> Dict[str, List[str]]:
+#     """Получить группы объемов памяти для фильтрации"""
+#     return {
+#         "64GB": ["64"],
+#         "128GB": ["128"],
+#         "256GB": ["256"],
+#         "512GB": ["512"],
+#         "1TB": ["1tb"]
+#     }
 
-def get_iphone_color_groups() -> Dict[str, List[str]]:
-    """Получить группы цветов для фильтрации"""
-    return {
-        "Черный": ["black"],
-        "Белый": ["white"],
-        "Натуральный": ["natural"],
-        "Пустынный": ["desert"],
-        "Синий": ["blue", "ultramarine"],
-        "Розовый": ["pink"],
-        "Зеленый": ["green"],
-        "Желтый": ["yellow"],
-        "Бирюзовый": ["teal"],
-        "Оранжевый": ["orange"],
-        "Красный": ["red"],
-        "Фиолетовый": ["purple"]
-    }
+# def get_iphone_color_groups() -> Dict[str, List[str]]:
+#     """Получить группы цветов для фильтрации"""
+#     return {
+#         "Черный": ["black"],
+#         "Белый": ["white"],
+#         "Натуральный": ["natural"],
+#         "Пустынный": ["desert"],
+#         "Синий": ["blue", "ultramarine"],
+#         "Розовый": ["pink"],
+#         "Зеленый": ["green"],
+#         "Желтый": ["yellow"],
+#         "Бирюзовый": ["teal"],
+#         "Оранжевый": ["orange"],
+#         "Красный": ["red"],
+#         "Фиолетовый": ["purple"]
+#     }
 
-def get_iphone_country_groups() -> Dict[str, List[str]]:
-    """Получить группы стран для фильтрации на основе реальных данных из БД"""
-    return {
-        "🇦🇪 ОАЭ": ["🇦🇪"],
-        "🇮🇳 Индия": ["🇮🇳"],
-        "🇭🇰 Гонконг": ["🇭🇰"],
-        "🇺🇸 США": ["🇺🇸"],
-        "🇯🇵 Япония": ["🇯🇵"],
-        "🇪🇺 Европа": ["🇪🇺"]
-    }
+# def get_iphone_country_groups() -> Dict[str, List[str]]:
+#     """Получить группы стран для фильтрации на основе реальных данных из БД"""
+#     return {
+#         "🇦🇪 ОАЭ": ["🇦🇪"],
+#         "🇮🇳 Индия": ["🇮🇳"],
+#         "🇭🇰 Гонконг": ["🇭🇰"],
+#         "🇺🇸 США": ["🇺🇸"],
+#         "🇯🇵 Япония": ["🇯🇵"],
+#         "🇪🇺 Европа": ["🇪🇺"]
+#     }
 
-async def get_filter_counts(user_id: int = None, current_filters: Dict[str, str] = None) -> Dict[str, Dict[str, int]]:
-    """Получить количество товаров для каждого фильтра с учетом уже примененных фильтров"""
-    if not CHANNEL_ID_OPT:
-        return {}
+# async def get_filter_counts(user_id: int = None, current_filters: Dict[str, str] = None) -> Dict[str, Dict[str, int]]:
+#     """Получить количество товаров для каждого фильтра с учетом уже примененных фильтров"""
+#     if not CHANNEL_ID_OPT:
+#         return {}
     
-    try:
-        async with Session() as s:
-            # Находим пост iPhone
-            iphone_post = (await s.execute(
-                select(MonitoredPost)
-                .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
-                .where(MonitoredPost.is_active == True)
-                .where(MonitoredPost.category.ilike('%🍏 iPhone%'))
-            )).scalar_one_or_none()
+#     try:
+#         async with Session() as s:
+#             # Находим пост iPhone
+#             iphone_post = (await s.execute(
+#                 select(MonitoredPost)
+#                 .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
+#                 .where(MonitoredPost.is_active == True)
+#                 .where(MonitoredPost.category.ilike('%🍏 iPhone%'))
+#             )).scalar_one_or_none()
             
-            if not iphone_post:
-                return {}
+#             if not iphone_post:
+#                 return {}
             
-            # Получаем товары iPhone с учетом уже примененных фильтров
-            query = select(Product).where(
-                and_(
-                    Product.channel_id == CHANNEL_ID_OPT,
-                    Product.group_message_id == iphone_post.message_id,
-                    Product.available == True,
-                    Product.price_wholesale != None
-                )
-            )
+#             # Получаем товары iPhone с учетом уже примененных фильтров
+#             query = select(Product).where(
+#                 and_(
+#                     Product.channel_id == CHANNEL_ID_OPT,
+#                     Product.group_message_id == iphone_post.message_id,
+#                     Product.available == True,
+#                     Product.price_wholesale != None
+#                 )
+#             )
             
-            # Применяем уже выбранные фильтры
-            if current_filters:
-                # Фильтр по состоянию
-                if "condition" in current_filters:
-                    condition = current_filters["condition"]
-                    if condition == "Новые":
-                        query = query.where(Product.is_used == False)
-                    elif condition == "Б/У":
-                        query = query.where(Product.is_used == True)
+#             # Применяем уже выбранные фильтры
+#             if current_filters:
+#                 # Фильтр по состоянию
+#                 if "condition" in current_filters:
+#                     condition = current_filters["condition"]
+#                     if condition == "Новые":
+#                         query = query.where(Product.is_used == False)
+#                     elif condition == "Б/У":
+#                         query = query.where(Product.is_used == True)
                 
-                # Фильтр по модели (исключаем из подсчета)
-                # Фильтр по памяти (исключаем из подсчета)
-                # Фильтр по стране (исключаем из подсчета)
-                # Фильтр по цвету (исключаем из подсчета)
+#                 # Фильтр по модели (исключаем из подсчета)
+#                 # Фильтр по памяти (исключаем из подсчета)
+#                 # Фильтр по стране (исключаем из подсчета)
+#                 # Фильтр по цвету (исключаем из подсчета)
             
-            # Получаем товары с учетом фильтров
-            filtered_products = list((await s.execute(query)).scalars())
+#             # Получаем товары с учетом фильтров
+#             filtered_products = list((await s.execute(query)).scalars())
             
-            counts = {
-                "models": {},
-                "memories": {},
-                "countries": {},
-                "colors": {}
-            }
+#             counts = {
+#                 "models": {},
+#                 "memories": {},
+#                 "countries": {},
+#                 "colors": {}
+#             }
             
-            # Подсчитываем модели (исключая уже выбранную)
-            model_groups = get_iphone_model_groups()
-            for group_name, models in model_groups.items():
-                # Пропускаем уже выбранную модель
-                if current_filters and "model" in current_filters and current_filters["model"] == group_name:
-                    continue
+#             # Подсчитываем модели (исключая уже выбранную)
+#             model_groups = get_iphone_model_groups()
+#             for group_name, models in model_groups.items():
+#                 # Пропускаем уже выбранную модель
+#                 if current_filters and "model" in current_filters and current_filters["model"] == group_name:
+#                     continue
                     
-                count = 0
-                for product in filtered_products:
-                    for model in models:
-                        if model in product.name:
-                            count += 1
-                            break
-                counts["models"][group_name] = count
+#                 count = 0
+#                 for product in filtered_products:
+#                     for model in models:
+#                         if model in product.name:
+#                             count += 1
+#                             break
+#                 counts["models"][group_name] = count
             
-            # Подсчитываем память (исключая уже выбранную)
-            memory_groups = get_iphone_memory_groups()
-            for group_name, memories in memory_groups.items():
-                # Пропускаем уже выбранную память
-                if current_filters and "memory" in current_filters and current_filters["memory"] == group_name:
-                    continue
+#             # Подсчитываем память (исключая уже выбранную)
+#             memory_groups = get_iphone_memory_groups()
+#             for group_name, memories in memory_groups.items():
+#                 # Пропускаем уже выбранную память
+#                 if current_filters and "memory" in current_filters and current_filters["memory"] == group_name:
+#                     continue
                     
-                count = 0
-                for product in filtered_products:
-                    for memory in memories:
-                        if memory in product.name:
-                            count += 1
-                            break
-                counts["memories"][group_name] = count
+#                 count = 0
+#                 for product in filtered_products:
+#                     for memory in memories:
+#                         if memory in product.name:
+#                             count += 1
+#                             break
+#                 counts["memories"][group_name] = count
             
-            # Подсчитываем страны (исключая уже выбранную)
-            country_groups = get_iphone_country_groups()
-            for group_name, flags in country_groups.items():
-                # Пропускаем уже выбранную страну
-                if current_filters and "country" in current_filters and current_filters["country"] == group_name:
-                    continue
+#             # Подсчитываем страны (исключая уже выбранную)
+#             country_groups = get_iphone_country_groups()
+#             for group_name, flags in country_groups.items():
+#                 # Пропускаем уже выбранную страну
+#                 if current_filters and "country" in current_filters and current_filters["country"] == group_name:
+#                     continue
                     
-                count = 0
-                for product in filtered_products:
-                    if product.extra_attrs and 'flag' in product.extra_attrs:
-                        if product.extra_attrs['flag'] in flags:
-                            count += 1
-                counts["countries"][group_name] = count
+#                 count = 0
+#                 for product in filtered_products:
+#                     if product.extra_attrs and 'flag' in product.extra_attrs:
+#                         if product.extra_attrs['flag'] in flags:
+#                             count += 1
+#                 counts["countries"][group_name] = count
             
-            # Подсчитываем цвета (исключая уже выбранный)
-            color_groups = get_iphone_color_groups()
-            for group_name, colors in color_groups.items():
-                # Пропускаем уже выбранный цвет
-                if current_filters and "color" in current_filters and current_filters["color"] == group_name:
-                    continue
+#             # Подсчитываем цвета (исключая уже выбранный)
+#             color_groups = get_iphone_color_groups()
+#             for group_name, colors in color_groups.items():
+#                 # Пропускаем уже выбранный цвет
+#                 if current_filters and "color" in current_filters and current_filters["color"] == group_name:
+#                     continue
                     
-                count = 0
-                for product in filtered_products:
-                    for color in colors:
-                        if color in product.name.lower():
-                            count += 1
-                            break
-                counts["colors"][group_name] = count
+#                 count = 0
+#                 for product in filtered_products:
+#                     for color in colors:
+#                         if color in product.name.lower():
+#                             count += 1
+#                             break
+#                 counts["colors"][group_name] = count
             
-            return counts
+#             return counts
             
-    except Exception as e:
-        log.error(f"Error getting filter counts: {e}")
-        return {}
+#     except Exception as e:
+#         log.error(f"Error getting filter counts: {e}")
+#         return {}
 
 def get_adaptive_button_length(user_id: int = None, user_agent: str = None) -> int:
     """
@@ -998,23 +998,23 @@ async def cb_back(c: CallbackQuery):
         await c.message.edit_reply_markup(reply_markup=kb)
     await c.answer()
 
-@dp.callback_query(F.data == "back_to_filters")
-async def cb_back_to_filters(c: CallbackQuery):
-    """Вернуться к фильтрам iPhone"""
-    try:
-        await c.message.edit_text(
-            "📱 <b>Фильтрация iPhone</b>\n\nВыберите тип товаров:",
-            parse_mode="HTML"
-        )
-        # Отправляем новое сообщение с клавиатурой фильтрации
-        await c.message.answer(
-            "📱 <b>Фильтрация iPhone</b>\n\nВыберите тип товаров:",
-            parse_mode="HTML",
-            reply_markup=filter_menu_kb()
-        )
-    except Exception as e:
-        log.error(f"Error in back_to_filters: {e}")
-        await c.answer("Ошибка")
+# @dp.callback_query(F.data == "back_to_filters")
+# async def cb_back_to_filters(c: CallbackQuery):
+#     """Вернуться к фильтрам iPhone"""
+#     try:
+#         await c.message.edit_text(
+#             "📱 <b>Фильтрация iPhone</b>\n\nВыберите тип товаров:",
+#             parse_mode="HTML"
+#         )
+#         # Отправляем новое сообщение с клавиатурой фильтрации
+#         await c.message.answer(
+#             "📱 <b>Фильтрация iPhone</b>\n\nВыберите тип товаров:",
+#             parse_mode="HTML",
+#             reply_markup=filter_menu_kb()
+#         )
+#     except Exception as e:
+#         log.error(f"Error in back_to_filters: {e}")
+#         await c.answer("Ошибка")
 
 # Обработчики пагинации iPhone
 # @dp.callback_query(F.data == "iphone_prev")
@@ -1900,249 +1900,249 @@ BTN_RESCAN_ADMIN = "🔄 Перескан (админ)"
 BTN_DIAG_ADMIN = "📊 Диагностика (админ)"
 BTN_SETTINGS_ADMIN = "⚙️ Настройки (админ)"
 
-# Кнопки фильтрации iPhone
-BTN_FILTER_ALL = "🔄 Все iPhone"
-BTN_FILTER_NEW = "🆕 Новые"
-BTN_FILTER_USED = "🔧 Б/У"
-BTN_FILTER_BACK = "⬅️ Назад к категориям"
+# # Кнопки фильтрации iPhone
+# BTN_FILTER_ALL = "🔄 Все iPhone"
+# BTN_FILTER_NEW = "🆕 Новые"
+# BTN_FILTER_USED = "🔧 Б/У"
+# BTN_FILTER_BACK = "⬅️ Назад к категориям"
 
-# Кнопки навигации фильтров
-BTN_FILTER_CLEAR = "🗑️ Сбросить фильтры"
-BTN_FILTER_BACK_TO_MENU = "🏠 Главное меню"
-BTN_FILTER_APPLY = "✅ Применить фильтры"
+# # Кнопки навигации фильтров
+# BTN_FILTER_CLEAR = "🗑️ Сбросить фильтры"
+# BTN_FILTER_BACK_TO_MENU = "🏠 Главное меню"
+# BTN_FILTER_APPLY = "✅ Применить фильтры"
 
-# Кнопки дополнительных фильтров
-BTN_FILTER_COUNTRY = "🌍 Страна"
-BTN_FILTER_COLOR = "🎨 Цвет"
-BTN_FILTER_CONDITION = "📱 Состояние"
+# # Кнопки дополнительных фильтров
+# BTN_FILTER_COUNTRY = "🌍 Страна"
+# BTN_FILTER_COLOR = "🎨 Цвет"
+# BTN_FILTER_CONDITION = "📱 Состояние"
 
-# Кнопки моделей iPhone
-BTN_IPHONE_11 = "📱 iPhone 11"
-BTN_IPHONE_12 = "📱 iPhone 12"
-BTN_IPHONE_13 = "📱 iPhone 13"
-BTN_IPHONE_14 = "📱 iPhone 14"
-BTN_IPHONE_15 = "📱 iPhone 15"
-BTN_IPHONE_16 = "📱 iPhone 16"
-BTN_IPHONE_17 = "📱 iPhone 17"
+# # Кнопки моделей iPhone
+# BTN_IPHONE_11 = "📱 iPhone 11"
+# BTN_IPHONE_12 = "📱 iPhone 12"
+# BTN_IPHONE_13 = "📱 iPhone 13"
+# BTN_IPHONE_14 = "📱 iPhone 14"
+# BTN_IPHONE_15 = "📱 iPhone 15"
+# BTN_IPHONE_16 = "📱 iPhone 16"
+# BTN_IPHONE_17 = "📱 iPhone 17"
 
-# Кнопки памяти
-BTN_MEMORY_64 = "💾 64GB"
-BTN_MEMORY_128 = "💾 128GB"
-BTN_MEMORY_256 = "💾 256GB"
-BTN_MEMORY_512 = "💾 512GB"
-BTN_MEMORY_1TB = "💾 1TB"
+# # Кнопки памяти
+# BTN_MEMORY_64 = "💾 64GB"
+# BTN_MEMORY_128 = "💾 128GB"
+# BTN_MEMORY_256 = "💾 256GB"
+# BTN_MEMORY_512 = "💾 512GB"
+# BTN_MEMORY_1TB = "💾 1TB"
 
-async def main_menu_kb(user_id: Optional[int]) -> ReplyKeyboardMarkup:
-    # Формируем текст кнопки корзины с количеством товаров
-    cart_text = BTN_CART
-    if user_id:
-        try:
-            cart_count = await cart_count_db(user_id)
-            if cart_count > 0:
-                cart_text = f"{BTN_CART} ({cart_count})"
-        except Exception:
-            pass  # Если ошибка, используем стандартный текст
+# async def main_menu_kb(user_id: Optional[int]) -> ReplyKeyboardMarkup:
+#     # Формируем текст кнопки корзины с количеством товаров
+#     cart_text = BTN_CART
+#     if user_id:
+#         try:
+#             cart_count = await cart_count_db(user_id)
+#             if cart_count > 0:
+#                 cart_text = f"{BTN_CART} ({cart_count})"
+#         except Exception:
+#             pass  # Если ошибка, используем стандартный текст
     
-    rows = [  # type: list[list[KeyboardButton]]
-        [KeyboardButton(text=BTN_CATALOG)],
-        [KeyboardButton(text=BTN_CONTACTS), KeyboardButton(text=cart_text)],
-    ]
+#     rows = [  # type: list[list[KeyboardButton]]
+#         [KeyboardButton(text=BTN_CATALOG)],
+#         [KeyboardButton(text=BTN_CONTACTS), KeyboardButton(text=cart_text)],
+#     ]
     
-    # Проверяем права админа (из .env или БД)
-    is_manager = False
-    if user_id:
-        # Сначала проверяем .env (для обратной совместимости)
-        if MANAGER_USER_IDS and user_id in MANAGER_USER_IDS:
-            is_manager = True
-        else:
-            # Затем проверяем БД
-            is_manager = await _is_manager(user_id, channel_type='wholesale')
+#     # Проверяем права админа (из .env или БД)
+#     is_manager = False
+#     if user_id:
+#         # Сначала проверяем .env (для обратной совместимости)
+#         if MANAGER_USER_IDS and user_id in MANAGER_USER_IDS:
+#             is_manager = True
+#         else:
+#             # Затем проверяем БД
+#             is_manager = await _is_manager(user_id, channel_type='wholesale')
     
-    if is_manager:
-        # Админские функции с визуальными индикаторами (админ)
-        rows.append([KeyboardButton(text=BTN_RESCAN_ADMIN), KeyboardButton(text=BTN_DIAG_ADMIN)])
-        rows.append([KeyboardButton(text=BTN_SETTINGS_ADMIN)])
+#     if is_manager:
+#         # Админские функции с визуальными индикаторами (админ)
+#         rows.append([KeyboardButton(text=BTN_RESCAN_ADMIN), KeyboardButton(text=BTN_DIAG_ADMIN)])
+#         rows.append([KeyboardButton(text=BTN_SETTINGS_ADMIN)])
     
-    return ReplyKeyboardMarkup(
-        keyboard=rows,
-        resize_keyboard=True,
-        input_field_placeholder="Выберите действие…"
-    )
+#     return ReplyKeyboardMarkup(
+#         keyboard=rows,
+#         resize_keyboard=True,
+#         input_field_placeholder="Выберите действие…"
+#     )
 
-def filter_menu_kb(user_id: int = None) -> ReplyKeyboardMarkup:
-    """Основная клавиатура фильтрации для iPhone"""
-    keyboard = [
-            [KeyboardButton(text=BTN_FILTER_ALL)],
-            [KeyboardButton(text=BTN_FILTER_NEW), KeyboardButton(text=BTN_FILTER_USED)],
-    ]
+# def filter_menu_kb(user_id: int = None) -> ReplyKeyboardMarkup:
+#     """Основная клавиатура фильтрации для iPhone"""
+#     keyboard = [
+#             [KeyboardButton(text=BTN_FILTER_ALL)],
+#             [KeyboardButton(text=BTN_FILTER_NEW), KeyboardButton(text=BTN_FILTER_USED)],
+#     ]
     
-    # Добавляем интерактивные кнопки фильтров
-    if user_id:
-        state = get_iphone_filter_state(user_id)
+#     # Добавляем интерактивные кнопки фильтров
+#     if user_id:
+#         state = get_iphone_filter_state(user_id)
         
-        # Кнопка модели - показывает выбранную или дефолтную
-        model_text = "📱 По модели"
-        if "model" in state["active_filters"]:
-            model_text = f"📱 {state['active_filters']['model']}"
-        keyboard.append([KeyboardButton(text=model_text)])
+#         # Кнопка модели - показывает выбранную или дефолтную
+#         model_text = "📱 По модели"
+#         if "model" in state["active_filters"]:
+#             model_text = f"📱 {state['active_filters']['model']}"
+#         keyboard.append([KeyboardButton(text=model_text)])
         
-        # Кнопка памяти - показывает выбранную или дефолтную  
-        memory_text = "💾 По памяти"
-        if "memory" in state["active_filters"]:
-            memory_text = f"💾 {state['active_filters']['memory']}"
-        keyboard.append([KeyboardButton(text=memory_text)])
+#         # Кнопка памяти - показывает выбранную или дефолтную  
+#         memory_text = "💾 По памяти"
+#         if "memory" in state["active_filters"]:
+#             memory_text = f"💾 {state['active_filters']['memory']}"
+#         keyboard.append([KeyboardButton(text=memory_text)])
         
-        # Кнопка страны - показывает выбранную или дефолтную
-        country_text = BTN_FILTER_COUNTRY
-        if "country" in state["active_filters"]:
-            country_text = f"🌍 {state['active_filters']['country']}"
-        keyboard.append([KeyboardButton(text=country_text)])
+#         # Кнопка страны - показывает выбранную или дефолтную
+#         country_text = BTN_FILTER_COUNTRY
+#         if "country" in state["active_filters"]:
+#             country_text = f"🌍 {state['active_filters']['country']}"
+#         keyboard.append([KeyboardButton(text=country_text)])
         
-        # Кнопка цвета - показывает выбранную или дефолтную
-        color_text = BTN_FILTER_COLOR
-        if "color" in state["active_filters"]:
-            color_text = f"🎨 {state['active_filters']['color']}"
-        keyboard.append([KeyboardButton(text=color_text)])
+#         # Кнопка цвета - показывает выбранную или дефолтную
+#         color_text = BTN_FILTER_COLOR
+#         if "color" in state["active_filters"]:
+#             color_text = f"🎨 {state['active_filters']['color']}"
+#         keyboard.append([KeyboardButton(text=color_text)])
         
-        # Кнопка сброса, если есть активные фильтры
-        if state["active_filters"]:
-            keyboard.append([KeyboardButton(text=BTN_FILTER_CLEAR)])
-    else:
-        # Дефолтные кнопки без состояния
-        keyboard.extend([
-            [KeyboardButton(text="📱 По модели"), KeyboardButton(text="💾 По памяти")],
-            [KeyboardButton(text=BTN_FILTER_COUNTRY), KeyboardButton(text=BTN_FILTER_COLOR)],
-        ])
+#         # Кнопка сброса, если есть активные фильтры
+#         if state["active_filters"]:
+#             keyboard.append([KeyboardButton(text=BTN_FILTER_CLEAR)])
+#     else:
+#         # Дефолтные кнопки без состояния
+#         keyboard.extend([
+#             [KeyboardButton(text="📱 По модели"), KeyboardButton(text="💾 По памяти")],
+#             [KeyboardButton(text=BTN_FILTER_COUNTRY), KeyboardButton(text=BTN_FILTER_COLOR)],
+#         ])
     
-    keyboard.append([KeyboardButton(text=BTN_FILTER_BACK)])
-    keyboard.append([KeyboardButton(text=BTN_FILTER_BACK_TO_MENU)])
+#     keyboard.append([KeyboardButton(text=BTN_FILTER_BACK)])
+#     keyboard.append([KeyboardButton(text=BTN_FILTER_BACK_TO_MENU)])
     
-    return ReplyKeyboardMarkup(
-        keyboard=keyboard,
-        resize_keyboard=True,
-        input_field_placeholder="Выберите фильтр…"
-    )
+#     return ReplyKeyboardMarkup(
+#         keyboard=keyboard,
+#         resize_keyboard=True,
+#         input_field_placeholder="Выберите фильтр…"
+#     )
 
-async def iphone_models_kb(user_id: int = None) -> ReplyKeyboardMarkup:
-    """Клавиатура выбора модели iPhone с группировкой и количеством товаров"""
-    model_groups = get_iphone_model_groups()
-    keyboard = []
+# async def iphone_models_kb(user_id: int = None) -> ReplyKeyboardMarkup:
+#     """Клавиатура выбора модели iPhone с группировкой и количеством товаров"""
+#     model_groups = get_iphone_model_groups()
+#     keyboard = []
     
-    # Получаем текущие фильтры пользователя
-    current_filters = get_iphone_filter_state(user_id)["active_filters"] if user_id else {}
+#     # Получаем текущие фильтры пользователя
+#     current_filters = get_iphone_filter_state(user_id)["active_filters"] if user_id else {}
     
-    # Получаем количество товаров для каждой модели с учетом текущих фильтров
-    counts = await get_filter_counts(user_id, current_filters)
-    model_counts = counts.get("models", {})
+#     # Получаем количество товаров для каждой модели с учетом текущих фильтров
+#     counts = await get_filter_counts(user_id, current_filters)
+#     model_counts = counts.get("models", {})
     
-    # Создаем кнопки для каждой группы моделей с количеством
-    for group_name in model_groups.keys():
-        count = model_counts.get(group_name, 0)
-        button_text = f"📱 {group_name}"
-        if count > 0:
-            button_text += f" ({count})"
-        keyboard.append([KeyboardButton(text=button_text)])
+#     # Создаем кнопки для каждой группы моделей с количеством
+#     for group_name in model_groups.keys():
+#         count = model_counts.get(group_name, 0)
+#         button_text = f"📱 {group_name}"
+#         if count > 0:
+#             button_text += f" ({count})"
+#         keyboard.append([KeyboardButton(text=button_text)])
     
-    keyboard.extend([
-        [KeyboardButton(text="⬅️ Назад к фильтрам")],
-        [KeyboardButton(text="⬅️ Назад в меню")]
-    ])
+#     keyboard.extend([
+#         [KeyboardButton(text="⬅️ Назад к фильтрам")],
+#         [KeyboardButton(text="⬅️ Назад в меню")]
+#     ])
     
-    return ReplyKeyboardMarkup(
-        keyboard=keyboard,
-        resize_keyboard=True,
-        input_field_placeholder="Выберите модель…"
-    )
+#     return ReplyKeyboardMarkup(
+#         keyboard=keyboard,
+#         resize_keyboard=True,
+#         input_field_placeholder="Выберите модель…"
+#     )
 
-async def iphone_memory_kb(user_id: int = None) -> ReplyKeyboardMarkup:
-    """Клавиатура выбора объема памяти с количеством товаров"""
-    # Получаем текущие фильтры пользователя
-    current_filters = get_iphone_filter_state(user_id)["active_filters"] if user_id else {}
+# async def iphone_memory_kb(user_id: int = None) -> ReplyKeyboardMarkup:
+#     """Клавиатура выбора объема памяти с количеством товаров"""
+#     # Получаем текущие фильтры пользователя
+#     current_filters = get_iphone_filter_state(user_id)["active_filters"] if user_id else {}
     
-    # Получаем количество товаров для каждой памяти с учетом текущих фильтров
-    counts = await get_filter_counts(user_id, current_filters)
-    memory_counts = counts.get("memories", {})
+#     # Получаем количество товаров для каждой памяти с учетом текущих фильтров
+#     counts = await get_filter_counts(user_id, current_filters)
+#     memory_counts = counts.get("memories", {})
     
-    # Создаем кнопки с количеством товаров
-    memory_buttons = []
-    memory_groups = get_iphone_memory_groups()
+#     # Создаем кнопки с количеством товаров
+#     memory_buttons = []
+#     memory_groups = get_iphone_memory_groups()
     
-    for group_name in memory_groups.keys():
-        count = memory_counts.get(group_name, 0)
-        button_text = f"💾 {group_name}"
-        if count > 0:
-            button_text += f" ({count})"
-        memory_buttons.append(KeyboardButton(text=button_text))
+#     for group_name in memory_groups.keys():
+#         count = memory_counts.get(group_name, 0)
+#         button_text = f"💾 {group_name}"
+#         if count > 0:
+#             button_text += f" ({count})"
+#         memory_buttons.append(KeyboardButton(text=button_text))
     
-    # Размещаем кнопки по 2 в ряд
-    keyboard = []
-    for i in range(0, len(memory_buttons), 2):
-        row = memory_buttons[i:i+2]
-        keyboard.append(row)
+#     # Размещаем кнопки по 2 в ряд
+#     keyboard = []
+#     for i in range(0, len(memory_buttons), 2):
+#         row = memory_buttons[i:i+2]
+#         keyboard.append(row)
     
-    keyboard.append([KeyboardButton(text="⬅️ Назад к фильтрам")])
+#     keyboard.append([KeyboardButton(text="⬅️ Назад к фильтрам")])
     
-    return ReplyKeyboardMarkup(
-        keyboard=keyboard,
-        resize_keyboard=True,
-        input_field_placeholder="Выберите память…"
-    )
+#     return ReplyKeyboardMarkup(
+#         keyboard=keyboard,
+#         resize_keyboard=True,
+#         input_field_placeholder="Выберите память…"
+#     )
 
-async def iphone_country_kb(user_id: int = None) -> ReplyKeyboardMarkup:
-    """Клавиатура выбора страны производителя с количеством товаров"""
-    country_groups = get_iphone_country_groups()
-    keyboard = []
+# async def iphone_country_kb(user_id: int = None) -> ReplyKeyboardMarkup:
+#     """Клавиатура выбора страны производителя с количеством товаров"""
+#     country_groups = get_iphone_country_groups()
+#     keyboard = []
     
-    # Получаем текущие фильтры пользователя
-    current_filters = get_iphone_filter_state(user_id)["active_filters"] if user_id else {}
+#     # Получаем текущие фильтры пользователя
+#     current_filters = get_iphone_filter_state(user_id)["active_filters"] if user_id else {}
     
-    # Получаем количество товаров для каждой страны с учетом текущих фильтров
-    counts = await get_filter_counts(user_id, current_filters)
-    country_counts = counts.get("countries", {})
+#     # Получаем количество товаров для каждой страны с учетом текущих фильтров
+#     counts = await get_filter_counts(user_id, current_filters)
+#     country_counts = counts.get("countries", {})
     
-    # Создаем кнопки для каждой страны с количеством
-    for country_name in country_groups.keys():
-        count = country_counts.get(country_name, 0)
-        button_text = country_name
-        if count > 0:
-            button_text += f" ({count})"
-        keyboard.append([KeyboardButton(text=button_text)])
+#     # Создаем кнопки для каждой страны с количеством
+#     for country_name in country_groups.keys():
+#         count = country_counts.get(country_name, 0)
+#         button_text = country_name
+#         if count > 0:
+#             button_text += f" ({count})"
+#         keyboard.append([KeyboardButton(text=button_text)])
     
-    keyboard.append([KeyboardButton(text="⬅️ Назад к фильтрам")])
+#     keyboard.append([KeyboardButton(text="⬅️ Назад к фильтрам")])
     
-    return ReplyKeyboardMarkup(
-        keyboard=keyboard,
-        resize_keyboard=True,
-        input_field_placeholder="Выберите страну…"
-    )
+#     return ReplyKeyboardMarkup(
+#         keyboard=keyboard,
+#         resize_keyboard=True,
+#         input_field_placeholder="Выберите страну…"
+#     )
 
-async def iphone_color_kb(user_id: int = None) -> ReplyKeyboardMarkup:
-    """Клавиатура выбора цвета iPhone с количеством товаров"""
-    color_groups = get_iphone_color_groups()
-    keyboard = []
+# async def iphone_color_kb(user_id: int = None) -> ReplyKeyboardMarkup:
+#     """Клавиатура выбора цвета iPhone с количеством товаров"""
+#     color_groups = get_iphone_color_groups()
+#     keyboard = []
     
-    # Получаем текущие фильтры пользователя
-    current_filters = get_iphone_filter_state(user_id)["active_filters"] if user_id else {}
+#     # Получаем текущие фильтры пользователя
+#     current_filters = get_iphone_filter_state(user_id)["active_filters"] if user_id else {}
     
-    # Получаем количество товаров для каждого цвета с учетом текущих фильтров
-    counts = await get_filter_counts(user_id, current_filters)
-    color_counts = counts.get("colors", {})
+#     # Получаем количество товаров для каждого цвета с учетом текущих фильтров
+#     counts = await get_filter_counts(user_id, current_filters)
+#     color_counts = counts.get("colors", {})
     
-    # Создаем кнопки для каждого цвета с количеством
-    for color_name in color_groups.keys():
-        count = color_counts.get(color_name, 0)
-        button_text = f"🎨 {color_name}"
-        if count > 0:
-            button_text += f" ({count})"
-        keyboard.append([KeyboardButton(text=button_text)])
+#     # Создаем кнопки для каждого цвета с количеством
+#     for color_name in color_groups.keys():
+#         count = color_counts.get(color_name, 0)
+#         button_text = f"🎨 {color_name}"
+#         if count > 0:
+#             button_text += f" ({count})"
+#         keyboard.append([KeyboardButton(text=button_text)])
     
-    keyboard.append([KeyboardButton(text="⬅️ Назад к фильтрам")])
+#     keyboard.append([KeyboardButton(text="⬅️ Назад к фильтрам")])
     
-    return ReplyKeyboardMarkup(
-        keyboard=keyboard,
-        resize_keyboard=True,
-        input_field_placeholder="Выберите цвет…"
-    )
+#     return ReplyKeyboardMarkup(
+#         keyboard=keyboard,
+#         resize_keyboard=True,
+#         input_field_placeholder="Выберите цвет…"
+#     )
 
 @dp.message(Command("menu"))
 async def on_menu(m: Message):
@@ -2244,197 +2244,197 @@ async def on_back_to_menu(m: Message):
     # Сохраняем ID сообщения с главным меню
     LAST_MAIN_MENU_MESSAGE[user_id] = message.message_id
 
-# Обработчики фильтрации iPhone
-@dp.message(F.text == BTN_FILTER_ALL)
-async def on_filter_all(m: Message):
-    """Показать все iPhone (новые и Б/У)"""
-    user_id = m.from_user.id if m.from_user else 0
-    clear_iphone_filter(user_id)  # Сбрасываем все фильтры
-    await show_iphone_products(m, show_all=True)
+# # Обработчики фильтрации iPhone
+# @dp.message(F.text == BTN_FILTER_ALL)
+# async def on_filter_all(m: Message):
+#     """Показать все iPhone (новые и Б/У)"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     clear_iphone_filter(user_id)  # Сбрасываем все фильтры
+#     await show_iphone_products(m, show_all=True)
 
-@dp.message(F.text == BTN_FILTER_NEW)
-async def on_filter_new(m: Message):
-    """Показать только новые iPhone"""
-    user_id = m.from_user.id if m.from_user else 0
-    set_iphone_filter(user_id, "condition", "Новые")
-    await show_iphone_products_with_filters(m, {"condition": "Новые"})
+# @dp.message(F.text == BTN_FILTER_NEW)
+# async def on_filter_new(m: Message):
+#     """Показать только новые iPhone"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     set_iphone_filter(user_id, "condition", "Новые")
+#     await show_iphone_products_with_filters(m, {"condition": "Новые"})
 
-@dp.message(F.text == BTN_FILTER_USED)
-async def on_filter_used(m: Message):
-    """Показать только Б/У iPhone"""
-    user_id = m.from_user.id if m.from_user else 0
-    set_iphone_filter(user_id, "condition", "Б/У")
-    await show_iphone_products_with_filters(m, {"condition": "Б/У"})
+# @dp.message(F.text == BTN_FILTER_USED)
+# async def on_filter_used(m: Message):
+#     """Показать только Б/У iPhone"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     set_iphone_filter(user_id, "condition", "Б/У")
+#     await show_iphone_products_with_filters(m, {"condition": "Б/У"})
 
-@dp.message(F.text == BTN_FILTER_BACK)
-async def on_filter_back(m: Message):
-    """Вернуться к категориям"""
-    cats = await fetch_categories()
-    if not cats:
-        await m.answer("Категории не настроены или пусто.", reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0))
-        return
-    max_row_chars = 34 if any(len(t) > 16 for t, _ in cats) else 40
-    kb = adaptive_kb(cats, max_per_row=2, max_row_chars=max_row_chars)
-    await m.answer("Выберите категорию:", reply_markup=kb)
+# @dp.message(F.text == BTN_FILTER_BACK)
+# async def on_filter_back(m: Message):
+#     """Вернуться к категориям"""
+#     cats = await fetch_categories()
+#     if not cats:
+#         await m.answer("Категории не настроены или пусто.", reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0))
+#         return
+#     max_row_chars = 34 if any(len(t) > 16 for t, _ in cats) else 40
+#     kb = adaptive_kb(cats, max_per_row=2, max_row_chars=max_row_chars)
+#     await m.answer("Выберите категорию:", reply_markup=kb)
 
-# Обработчики для выбора типа фильтрации
-@dp.message(F.text == "📱 По модели")
-async def on_filter_by_model(m: Message):
-    """Показать клавиатуру выбора модели"""
-    user_id = m.from_user.id if m.from_user else 0
-    state = get_iphone_filter_state(user_id)
-    state["current_step"] = "model"
+# # Обработчики для выбора типа фильтрации
+# @dp.message(F.text == "📱 По модели")
+# async def on_filter_by_model(m: Message):
+#     """Показать клавиатуру выбора модели"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     state = get_iphone_filter_state(user_id)
+#     state["current_step"] = "model"
     
-    text = "📱 <b>Выберите модель iPhone:</b>\n\n"
-    text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}"
+#     text = "📱 <b>Выберите модель iPhone:</b>\n\n"
+#     text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}"
     
-    await m.answer(text, parse_mode="HTML", reply_markup=await iphone_models_kb(user_id))
+#     await m.answer(text, parse_mode="HTML", reply_markup=await iphone_models_kb(user_id))
 
-@dp.message(F.text == "💾 По памяти")
-async def on_filter_by_memory(m: Message):
-    """Показать клавиатуру выбора памяти"""
-    user_id = m.from_user.id if m.from_user else 0
-    state = get_iphone_filter_state(user_id)
-    state["current_step"] = "memory"
+# @dp.message(F.text == "💾 По памяти")
+# async def on_filter_by_memory(m: Message):
+#     """Показать клавиатуру выбора памяти"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     state = get_iphone_filter_state(user_id)
+#     state["current_step"] = "memory"
     
-    text = "💾 <b>Выберите объем памяти:</b>\n\n"
-    text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}"
+#     text = "💾 <b>Выберите объем памяти:</b>\n\n"
+#     text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}"
     
-    await m.answer(text, parse_mode="HTML", reply_markup=await iphone_memory_kb(user_id))
+#     await m.answer(text, parse_mode="HTML", reply_markup=await iphone_memory_kb(user_id))
 
-@dp.message(F.text == BTN_FILTER_COUNTRY)
-async def on_filter_by_country(m: Message):
-    """Показать клавиатуру выбора страны"""
-    user_id = m.from_user.id if m.from_user else 0
-    state = get_iphone_filter_state(user_id)
-    state["current_step"] = "country"
+# @dp.message(F.text == BTN_FILTER_COUNTRY)
+# async def on_filter_by_country(m: Message):
+#     """Показать клавиатуру выбора страны"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     state = get_iphone_filter_state(user_id)
+#     state["current_step"] = "country"
     
-    text = "🌍 <b>Выберите страну производителя:</b>\n\n"
-    text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}"
+#     text = "🌍 <b>Выберите страну производителя:</b>\n\n"
+#     text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}"
     
-    await m.answer(text, parse_mode="HTML", reply_markup=await iphone_country_kb(user_id))
+#     await m.answer(text, parse_mode="HTML", reply_markup=await iphone_country_kb(user_id))
 
-@dp.message(F.text == BTN_FILTER_COLOR)
-async def on_filter_by_color(m: Message):
-    """Показать клавиатуру выбора цвета"""
-    user_id = m.from_user.id if m.from_user else 0
-    state = get_iphone_filter_state(user_id)
-    state["current_step"] = "color"
+# @dp.message(F.text == BTN_FILTER_COLOR)
+# async def on_filter_by_color(m: Message):
+#     """Показать клавиатуру выбора цвета"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     state = get_iphone_filter_state(user_id)
+#     state["current_step"] = "color"
     
-    text = "🎨 <b>Выберите цвет iPhone:</b>\n\n"
-    text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}"
+#     text = "🎨 <b>Выберите цвет iPhone:</b>\n\n"
+#     text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}"
     
-    await m.answer(text, parse_mode="HTML", reply_markup=await iphone_color_kb(user_id))
+#     await m.answer(text, parse_mode="HTML", reply_markup=await iphone_color_kb(user_id))
 
-@dp.message(F.text == "⬅️ Назад к фильтрам")
-async def on_back_to_filters(m: Message):
-    """Вернуться к основным фильтрам"""
-    user_id = m.from_user.id if m.from_user else 0
-    text = "📱 <b>Фильтрация iPhone</b>\n\n"
-    text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}\n\n"
-    text += "Выберите тип фильтрации:"
+# @dp.message(F.text == "⬅️ Назад к фильтрам")
+# async def on_back_to_filters(m: Message):
+#     """Вернуться к основным фильтрам"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     text = "📱 <b>Фильтрация iPhone</b>\n\n"
+#     text += f"<b>Текущие фильтры:</b> {get_iphone_filter_summary(user_id)}\n\n"
+#     text += "Выберите тип фильтрации:"
     
-    await m.answer(text, parse_mode="HTML", reply_markup=filter_menu_kb(user_id))
+#     await m.answer(text, parse_mode="HTML", reply_markup=filter_menu_kb(user_id))
 
-# Обработчики для моделей iPhone с группировкой
-@dp.message(F.text.regexp(r"^📱 (.+)$"))
-async def on_iphone_model_group(m: Message):
-    """Фильтрация по группе моделей iPhone"""
-    user_id = m.from_user.id if m.from_user else 0
-    model_text = m.text.replace("📱 ", "").strip()
+# # Обработчики для моделей iPhone с группировкой
+# @dp.message(F.text.regexp(r"^📱 (.+)$"))
+# async def on_iphone_model_group(m: Message):
+#     """Фильтрация по группе моделей iPhone"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     model_text = m.text.replace("📱 ", "").strip()
     
-    # Убираем количество в скобках, если есть
-    model_group = model_text.split(" (")[0]
+#     # Убираем количество в скобках, если есть
+#     model_group = model_text.split(" (")[0]
     
-    # Проверяем, не пытается ли пользователь снять фильтр
-    state = get_iphone_filter_state(user_id)
-    if "model" in state["active_filters"] and state["active_filters"]["model"] == model_group:
-        # Снимаем фильтр
-        clear_iphone_filter(user_id, "model")
-        await m.answer(f"✅ Фильтр по модели '{model_group}' снят")
-        # Показываем все товары
-        await show_iphone_products(m, show_all=True)
-    else:
-        # Устанавливаем фильтр
-        set_iphone_filter(user_id, "model", model_group)
-        # Применяем фильтры мгновенно
-        state = get_iphone_filter_state(user_id)
-        await show_iphone_products_with_filters(m, state["active_filters"])
+#     # Проверяем, не пытается ли пользователь снять фильтр
+#     state = get_iphone_filter_state(user_id)
+#     if "model" in state["active_filters"] and state["active_filters"]["model"] == model_group:
+#         # Снимаем фильтр
+#         clear_iphone_filter(user_id, "model")
+#         await m.answer(f"✅ Фильтр по модели '{model_group}' снят")
+#         # Показываем все товары
+#         await show_iphone_products(m, show_all=True)
+#     else:
+#         # Устанавливаем фильтр
+#         set_iphone_filter(user_id, "model", model_group)
+#         # Применяем фильтры мгновенно
+#         state = get_iphone_filter_state(user_id)
+#         await show_iphone_products_with_filters(m, state["active_filters"])
 
-# Обработчики для памяти
-@dp.message(F.text.regexp(r"^💾 (.+)$"))
-async def on_iphone_memory(m: Message):
-    """Фильтрация по объему памяти"""
-    user_id = m.from_user.id if m.from_user else 0
-    memory_text = m.text.replace("💾 ", "").strip()
+# # Обработчики для памяти
+# @dp.message(F.text.regexp(r"^💾 (.+)$"))
+# async def on_iphone_memory(m: Message):
+#     """Фильтрация по объему памяти"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     memory_text = m.text.replace("💾 ", "").strip()
     
-    # Убираем количество в скобках, если есть
-    memory = memory_text.split(" (")[0]
+#     # Убираем количество в скобках, если есть
+#     memory = memory_text.split(" (")[0]
     
-    # Проверяем, не пытается ли пользователь снять фильтр
-    state = get_iphone_filter_state(user_id)
-    if "memory" in state["active_filters"] and state["active_filters"]["memory"] == memory:
-        # Снимаем фильтр
-        clear_iphone_filter(user_id, "memory")
-        await m.answer(f"✅ Фильтр по памяти '{memory}' снят")
-        # Показываем все товары
-        await show_iphone_products(m, show_all=True)
-    else:
-        # Устанавливаем фильтр
-        set_iphone_filter(user_id, "memory", memory)
-        # Применяем фильтры мгновенно
-        state = get_iphone_filter_state(user_id)
-        await show_iphone_products_with_filters(m, state["active_filters"])
+#     # Проверяем, не пытается ли пользователь снять фильтр
+#     state = get_iphone_filter_state(user_id)
+#     if "memory" in state["active_filters"] and state["active_filters"]["memory"] == memory:
+#         # Снимаем фильтр
+#         clear_iphone_filter(user_id, "memory")
+#         await m.answer(f"✅ Фильтр по памяти '{memory}' снят")
+#         # Показываем все товары
+#         await show_iphone_products(m, show_all=True)
+#     else:
+#         # Устанавливаем фильтр
+#         set_iphone_filter(user_id, "memory", memory)
+#         # Применяем фильтры мгновенно
+#         state = get_iphone_filter_state(user_id)
+#         await show_iphone_products_with_filters(m, state["active_filters"])
 
-# Обработчики для страны
-@dp.message(F.text.regexp(r"^🇦🇪 ОАЭ|^🇮🇳 Индия|^🇭🇰 Гонконг|^🇺🇸 США|^🇯🇵 Япония|^🇪🇺 Европа"))
-async def on_iphone_country(m: Message):
-    """Фильтрация по стране производителя"""
-    user_id = m.from_user.id if m.from_user else 0
-    country_text = m.text
+# # Обработчики для страны
+# @dp.message(F.text.regexp(r"^🇦🇪 ОАЭ|^🇮🇳 Индия|^🇭🇰 Гонконг|^🇺🇸 США|^🇯🇵 Япония|^🇪🇺 Европа"))
+# async def on_iphone_country(m: Message):
+#     """Фильтрация по стране производителя"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     country_text = m.text
     
-    # Убираем количество в скобках, если есть
-    country = country_text.split(" (")[0]
+#     # Убираем количество в скобках, если есть
+#     country = country_text.split(" (")[0]
     
-    # Проверяем, не пытается ли пользователь снять фильтр
-    state = get_iphone_filter_state(user_id)
-    if "country" in state["active_filters"] and state["active_filters"]["country"] == country:
-        # Снимаем фильтр
-        clear_iphone_filter(user_id, "country")
-        await m.answer(f"✅ Фильтр по стране '{country}' снят")
-        # Показываем все товары
-        await show_iphone_products(m, show_all=True)
-    else:
-        # Устанавливаем фильтр
-        set_iphone_filter(user_id, "country", country)
-        # Применяем фильтры мгновенно
-        state = get_iphone_filter_state(user_id)
-        await show_iphone_products_with_filters(m, state["active_filters"])
+#     # Проверяем, не пытается ли пользователь снять фильтр
+#     state = get_iphone_filter_state(user_id)
+#     if "country" in state["active_filters"] and state["active_filters"]["country"] == country:
+#         # Снимаем фильтр
+#         clear_iphone_filter(user_id, "country")
+#         await m.answer(f"✅ Фильтр по стране '{country}' снят")
+#         # Показываем все товары
+#         await show_iphone_products(m, show_all=True)
+#     else:
+#         # Устанавливаем фильтр
+#         set_iphone_filter(user_id, "country", country)
+#         # Применяем фильтры мгновенно
+#         state = get_iphone_filter_state(user_id)
+#         await show_iphone_products_with_filters(m, state["active_filters"])
 
-# Обработчики для цвета
-@dp.message(F.text.regexp(r"^🎨 (.+)$"))
-async def on_iphone_color_group(m: Message):
-    """Фильтрация по группе цветов iPhone"""
-    user_id = m.from_user.id if m.from_user else 0
-    color_text = m.text.replace("🎨 ", "").strip()
+# # Обработчики для цвета
+# @dp.message(F.text.regexp(r"^🎨 (.+)$"))
+# async def on_iphone_color_group(m: Message):
+#     """Фильтрация по группе цветов iPhone"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     color_text = m.text.replace("🎨 ", "").strip()
     
-    # Убираем количество в скобках, если есть
-    color_group = color_text.split(" (")[0]
+#     # Убираем количество в скобках, если есть
+#     color_group = color_text.split(" (")[0]
     
-    # Проверяем, не пытается ли пользователь снять фильтр
-    state = get_iphone_filter_state(user_id)
-    if "color" in state["active_filters"] and state["active_filters"]["color"] == color_group:
-        # Снимаем фильтр
-        clear_iphone_filter(user_id, "color")
-        await m.answer(f"✅ Фильтр по цвету '{color_group}' снят")
-        # Показываем все товары
-        await show_iphone_products(m, show_all=True)
-    else:
-        # Устанавливаем фильтр
-        set_iphone_filter(user_id, "color", color_group)
-        # Применяем фильтры мгновенно
-        state = get_iphone_filter_state(user_id)
-        await show_iphone_products_with_filters(m, state["active_filters"])
+#     # Проверяем, не пытается ли пользователь снять фильтр
+#     state = get_iphone_filter_state(user_id)
+#     if "color" in state["active_filters"] and state["active_filters"]["color"] == color_group:
+#         # Снимаем фильтр
+#         clear_iphone_filter(user_id, "color")
+#         await m.answer(f"✅ Фильтр по цвету '{color_group}' снят")
+#         # Показываем все товары
+#         await show_iphone_products(m, show_all=True)
+#     else:
+#         # Устанавливаем фильтр
+#         set_iphone_filter(user_id, "color", color_group)
+#         # Применяем фильтры мгновенно
+#         state = get_iphone_filter_state(user_id)
+#         await show_iphone_products_with_filters(m, state["active_filters"])
 
 # Обработчики для интерактивных кнопок фильтров
 # @dp.message(F.text.regexp(r"^📱 (iPhone \d+)$"))
@@ -2455,476 +2455,476 @@ async def on_iphone_color_group(m: Message):
 #         state = get_iphone_filter_state(user_id)
 #         await show_iphone_products_with_filters(m, state["active_filters"])
 
-@dp.message(F.text.regexp(r"^💾 (\d+GB)$"))
-async def on_iphone_memory_toggle(m: Message):
-    """Переключение фильтра памяти iPhone"""
-    user_id = m.from_user.id if m.from_user else 0
-    memory = m.text.replace("💾 ", "").strip()
-    state = get_iphone_filter_state(user_id)
+# @dp.message(F.text.regexp(r"^💾 (\d+GB)$"))
+# async def on_iphone_memory_toggle(m: Message):
+#     """Переключение фильтра памяти iPhone"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     memory = m.text.replace("💾 ", "").strip()
+#     state = get_iphone_filter_state(user_id)
     
-    # Если уже выбран этот фильтр - снимаем его
-    if "memory" in state["active_filters"] and state["active_filters"]["memory"] == memory:
-        clear_iphone_filter(user_id, "memory")
-        # Показываем все iPhone без фильтра памяти
-        await show_iphone_products(m, show_all=True)
-    else:
-        # Устанавливаем новый фильтр
-        set_iphone_filter(user_id, "memory", memory)
-        state = get_iphone_filter_state(user_id)
-        await show_iphone_products_with_filters(m, state["active_filters"])
+#     # Если уже выбран этот фильтр - снимаем его
+#     if "memory" in state["active_filters"] and state["active_filters"]["memory"] == memory:
+#         clear_iphone_filter(user_id, "memory")
+#         # Показываем все iPhone без фильтра памяти
+#         await show_iphone_products(m, show_all=True)
+#     else:
+#         # Устанавливаем новый фильтр
+#         set_iphone_filter(user_id, "memory", memory)
+#         state = get_iphone_filter_state(user_id)
+#         await show_iphone_products_with_filters(m, state["active_filters"])
 
-@dp.message(F.text.regexp(r"^🌍 (.+)$"))
-async def on_iphone_country_toggle(m: Message):
-    """Переключение фильтра страны iPhone"""
-    user_id = m.from_user.id if m.from_user else 0
-    country = m.text.replace("🌍 ", "").strip()
-    state = get_iphone_filter_state(user_id)
+# @dp.message(F.text.regexp(r"^🌍 (.+)$"))
+# async def on_iphone_country_toggle(m: Message):
+#     """Переключение фильтра страны iPhone"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     country = m.text.replace("🌍 ", "").strip()
+#     state = get_iphone_filter_state(user_id)
     
-    # Если уже выбран этот фильтр - снимаем его
-    if "country" in state["active_filters"] and state["active_filters"]["country"] == country:
-        clear_iphone_filter(user_id, "country")
-        # Показываем все iPhone без фильтра страны
-        await show_iphone_products(m, show_all=True)
-    else:
-        # Устанавливаем новый фильтр
-        set_iphone_filter(user_id, "country", country)
-        state = get_iphone_filter_state(user_id)
-        await show_iphone_products_with_filters(m, state["active_filters"])
+#     # Если уже выбран этот фильтр - снимаем его
+#     if "country" in state["active_filters"] and state["active_filters"]["country"] == country:
+#         clear_iphone_filter(user_id, "country")
+#         # Показываем все iPhone без фильтра страны
+#         await show_iphone_products(m, show_all=True)
+#     else:
+#         # Устанавливаем новый фильтр
+#         set_iphone_filter(user_id, "country", country)
+#         state = get_iphone_filter_state(user_id)
+#         await show_iphone_products_with_filters(m, state["active_filters"])
 
-@dp.message(F.text.regexp(r"^🎨 (.+)$"))
-async def on_iphone_color_toggle(m: Message):
-    """Переключение фильтра цвета iPhone"""
-    user_id = m.from_user.id if m.from_user else 0
-    color = m.text.replace("🎨 ", "").strip()
-    state = get_iphone_filter_state(user_id)
+# @dp.message(F.text.regexp(r"^🎨 (.+)$"))
+# async def on_iphone_color_toggle(m: Message):
+#     """Переключение фильтра цвета iPhone"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     color = m.text.replace("🎨 ", "").strip()
+#     state = get_iphone_filter_state(user_id)
     
-    # Если уже выбран этот фильтр - снимаем его
-    if "color" in state["active_filters"] and state["active_filters"]["color"] == color:
-        clear_iphone_filter(user_id, "color")
-        # Показываем все iPhone без фильтра цвета
-        await show_iphone_products(m, show_all=True)
-    else:
-        # Устанавливаем новый фильтр
-        set_iphone_filter(user_id, "color", color)
-        state = get_iphone_filter_state(user_id)
-        await show_iphone_products_with_filters(m, state["active_filters"])
+#     # Если уже выбран этот фильтр - снимаем его
+#     if "color" in state["active_filters"] and state["active_filters"]["color"] == color:
+#         clear_iphone_filter(user_id, "color")
+#         # Показываем все iPhone без фильтра цвета
+#         await show_iphone_products(m, show_all=True)
+#     else:
+#         # Устанавливаем новый фильтр
+#         set_iphone_filter(user_id, "color", color)
+#         state = get_iphone_filter_state(user_id)
+#         await show_iphone_products_with_filters(m, state["active_filters"])
 
-# Обработчики управления фильтрами
-@dp.message(F.text == BTN_FILTER_CLEAR)
-async def on_clear_filters(m: Message):
-    """Сбросить все фильтры"""
-    user_id = m.from_user.id if m.from_user else 0
-    clear_iphone_filter(user_id)
+# # Обработчики управления фильтрами
+# @dp.message(F.text == BTN_FILTER_CLEAR)
+# async def on_clear_filters(m: Message):
+#     """Сбросить все фильтры"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     clear_iphone_filter(user_id)
     
-    text = "🗑️ <b>Все фильтры сброшены</b>\n\n"
-    text += "Выберите тип фильтрации:"
+#     text = "🗑️ <b>Все фильтры сброшены</b>\n\n"
+#     text += "Выберите тип фильтрации:"
     
-    await m.answer(text, parse_mode="HTML", reply_markup=filter_menu_kb(user_id))
+#     await m.answer(text, parse_mode="HTML", reply_markup=filter_menu_kb(user_id))
 
 
-@dp.message(F.text == BTN_FILTER_BACK_TO_MENU)
-async def on_back_to_main_menu(m: Message):
-    """Вернуться в главное меню"""
-    user_id = m.from_user.id if m.from_user else 0
-    clear_iphone_filter(user_id)  # Сбрасываем фильтры при выходе
+# @dp.message(F.text == BTN_FILTER_BACK_TO_MENU)
+# async def on_back_to_main_menu(m: Message):
+#     """Вернуться в главное меню"""
+#     user_id = m.from_user.id if m.from_user else 0
+#     clear_iphone_filter(user_id)  # Сбрасываем фильтры при выходе
     
-    await m.answer("🏠 <b>Главное меню</b>\n\nВыберите действие:", 
-                   parse_mode="HTML", 
-                   reply_markup=await main_menu_kb(user_id))
+#     await m.answer("🏠 <b>Главное меню</b>\n\nВыберите действие:", 
+#                    parse_mode="HTML", 
+#                    reply_markup=await main_menu_kb(user_id))
 
-async def show_iphone_products_with_filters(m: Message, filters: Dict[str, str]):
-    """Показать товары iPhone с применением фильтров"""
-    if not CHANNEL_ID_OPT:
-        await m.answer("❌ Оптовый канал не настроен.")
-        return
+# async def show_iphone_products_with_filters(m: Message, filters: Dict[str, str]):
+#     """Показать товары iPhone с применением фильтров"""
+#     if not CHANNEL_ID_OPT:
+#         await m.answer("❌ Оптовый канал не настроен.")
+#         return
     
-    try:
-        async with Session() as s:
-            # Находим пост iPhone
-            iphone_post = (await s.execute(
-                select(MonitoredPost)
-                .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
-                .where(MonitoredPost.is_active == True)
-                .where(MonitoredPost.category.ilike('%🍏 iPhone%'))
-            )).scalar_one_or_none()
+#     try:
+#         async with Session() as s:
+#             # Находим пост iPhone
+#             iphone_post = (await s.execute(
+#                 select(MonitoredPost)
+#                 .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
+#                 .where(MonitoredPost.is_active == True)
+#                 .where(MonitoredPost.category.ilike('%🍏 iPhone%'))
+#             )).scalar_one_or_none()
             
-            if not iphone_post:
-                await m.answer("❌ Пост с товарами iPhone не найден.")
-                return
+#             if not iphone_post:
+#                 await m.answer("❌ Пост с товарами iPhone не найден.")
+#                 return
             
-            # Базовый запрос для iPhone товаров
-            query = select(Product).where(
-                and_(
-                    Product.channel_id == CHANNEL_ID_OPT,
-                    Product.group_message_id == iphone_post.message_id,
-                    Product.available == True,
-                    Product.price_wholesale != None
-                )
-            )
+#             # Базовый запрос для iPhone товаров
+#             query = select(Product).where(
+#                 and_(
+#                     Product.channel_id == CHANNEL_ID_OPT,
+#                     Product.group_message_id == iphone_post.message_id,
+#                     Product.available == True,
+#                     Product.price_wholesale != None
+#                 )
+#             )
             
-            # Применяем фильтры
-            if "model" in filters:
-                model_group = filters["model"]
-                model_groups = get_iphone_model_groups()
-                if model_group in model_groups:
-                    model_conditions = []
-                    for model in model_groups[model_group]:
-                        model_conditions.append(Product.name.ilike(f"%{model}%"))
-                    if model_conditions:
-                        query = query.where(or_(*model_conditions))
+#             # Применяем фильтры
+#             if "model" in filters:
+#                 model_group = filters["model"]
+#                 model_groups = get_iphone_model_groups()
+#                 if model_group in model_groups:
+#                     model_conditions = []
+#                     for model in model_groups[model_group]:
+#                         model_conditions.append(Product.name.ilike(f"%{model}%"))
+#                     if model_conditions:
+#                         query = query.where(or_(*model_conditions))
             
-            if "memory" in filters:
-                memory_group = filters["memory"]
-                memory_groups = get_iphone_memory_groups()
-                if memory_group in memory_groups:
-                    memory_conditions = []
-                    for memory in memory_groups[memory_group]:
-                        memory_conditions.append(Product.name.ilike(f"%{memory}%"))
-                    if memory_conditions:
-                        query = query.where(or_(*memory_conditions))
+#             if "memory" in filters:
+#                 memory_group = filters["memory"]
+#                 memory_groups = get_iphone_memory_groups()
+#                 if memory_group in memory_groups:
+#                     memory_conditions = []
+#                     for memory in memory_groups[memory_group]:
+#                         memory_conditions.append(Product.name.ilike(f"%{memory}%"))
+#                     if memory_conditions:
+#                         query = query.where(or_(*memory_conditions))
             
-            if "condition" in filters:
-                condition = filters["condition"]
-                if condition == "Новые":
-                    query = query.where(Product.is_used == False)
-                elif condition == "Б/У":
-                    query = query.where(Product.is_used == True)
+#             if "condition" in filters:
+#                 condition = filters["condition"]
+#                 if condition == "Новые":
+#                     query = query.where(Product.is_used == False)
+#                 elif condition == "Б/У":
+#                     query = query.where(Product.is_used == True)
             
-            if "country" in filters:
-                country_group = filters["country"]
-                country_groups = get_iphone_country_groups()
-                if country_group in country_groups:
-                    # Пока что фильтрация по стране не реализована на уровне SQL
-                    # так как сложно работать с JSON полями в SQLAlchemy
-                    pass
+#             if "country" in filters:
+#                 country_group = filters["country"]
+#                 country_groups = get_iphone_country_groups()
+#                 if country_group in country_groups:
+#                     # Пока что фильтрация по стране не реализована на уровне SQL
+#                     # так как сложно работать с JSON полями в SQLAlchemy
+#                     pass
             
-            if "color" in filters:
-                color_group = filters["color"]
-                color_groups = get_iphone_color_groups()
-                if color_group in color_groups:
-                    color_conditions = []
-                    for color in color_groups[color_group]:
-                        color_conditions.append(Product.name.ilike(f"%{color}%"))
-                    if color_conditions:
-                        query = query.where(or_(*color_conditions))
+#             if "color" in filters:
+#                 color_group = filters["color"]
+#                 color_groups = get_iphone_color_groups()
+#                 if color_group in color_groups:
+#                     color_conditions = []
+#                     for color in color_groups[color_group]:
+#                         color_conditions.append(Product.name.ilike(f"%{color}%"))
+#                     if color_conditions:
+#                         query = query.where(or_(*color_conditions))
             
-            # Выполняем запрос с сортировкой по цене по убыванию
-            products = list((await s.execute(query.order_by(Product.price_wholesale.desc()))).scalars())
+#             # Выполняем запрос с сортировкой по цене по убыванию
+#             products = list((await s.execute(query.order_by(Product.price_wholesale.desc()))).scalars())
             
-            # Применяем фильтрацию по стране на уровне Python
-            if "country" in filters:
-                country_group = filters["country"]
-                country_groups = get_iphone_country_groups()
-                if country_group in country_groups:
-                    filtered_products = []
-                    for product in products:
-                        if product.extra_attrs and 'flag' in product.extra_attrs:
-                            product_flag = product.extra_attrs['flag']
-                            if product_flag in country_groups[country_group]:
-                                filtered_products.append(product)
-                    products = filtered_products
+#             # Применяем фильтрацию по стране на уровне Python
+#             if "country" in filters:
+#                 country_group = filters["country"]
+#                 country_groups = get_iphone_country_groups()
+#                 if country_group in country_groups:
+#                     filtered_products = []
+#                     for product in products:
+#                         if product.extra_attrs and 'flag' in product.extra_attrs:
+#                             product_flag = product.extra_attrs['flag']
+#                             if product_flag in country_groups[country_group]:
+#                                 filtered_products.append(product)
+#                     products = filtered_products
             
-            if not products:
-                text = "📱 <b>Результаты поиска</b>\n\n"
-                text += f"<b>Примененные фильтры:</b> {get_iphone_filter_summary(m.from_user.id if m.from_user else 0)}\n\n"
-                text += "❌ По вашим критериям ничего не найдено.\n\n"
-                text += "Попробуйте изменить фильтры:"
+#             if not products:
+#                 text = "📱 <b>Результаты поиска</b>\n\n"
+#                 text += f"<b>Примененные фильтры:</b> {get_iphone_filter_summary(m.from_user.id if m.from_user else 0)}\n\n"
+#                 text += "❌ По вашим критериям ничего не найдено.\n\n"
+#                 text += "Попробуйте изменить фильтры:"
                 
-                await m.answer(text, parse_mode="HTML", reply_markup=filter_menu_kb(m.from_user.id if m.from_user else 0))
-                return
+#                 await m.answer(text, parse_mode="HTML", reply_markup=filter_menu_kb(m.from_user.id if m.from_user else 0))
+#                 return
             
-            # Показываем результаты с обновленной клавиатурой
-            text = f"📱 <b>Найдено {len(products)} товаров</b>\n\n"
-            text += f"<b>Примененные фильтры:</b> {get_iphone_filter_summary(m.from_user.id if m.from_user else 0)}"
+#             # Показываем результаты с обновленной клавиатурой
+#             text = f"📱 <b>Найдено {len(products)} товаров</b>\n\n"
+#             text += f"<b>Примененные фильтры:</b> {get_iphone_filter_summary(m.from_user.id if m.from_user else 0)}"
             
-            await m.answer(text, parse_mode="HTML", reply_markup=filter_menu_kb(m.from_user.id if m.from_user else 0))
-            await _create_iphone_buttons(m, products, "")
+#             await m.answer(text, parse_mode="HTML", reply_markup=filter_menu_kb(m.from_user.id if m.from_user else 0))
+#             await _create_iphone_buttons(m, products, "")
             
-    except Exception as e:
-        log.error(f"Error filtering iPhone products: {e}")
-        await m.answer("❌ Ошибка при применении фильтров.")
+#     except Exception as e:
+#         log.error(f"Error filtering iPhone products: {e}")
+#         await m.answer("❌ Ошибка при применении фильтров.")
 
-async def show_iphone_products(m: Message, show_all: bool = True, show_used: bool = None):
-    """Показать товары iPhone с фильтрацией"""
-    if not CHANNEL_ID_OPT:
-        await m.answer("❌ Оптовый канал не настроен.")
-        return
+# async def show_iphone_products(m: Message, show_all: bool = True, show_used: bool = None):
+#     """Показать товары iPhone с фильтрацией"""
+#     if not CHANNEL_ID_OPT:
+#         await m.answer("❌ Оптовый канал не настроен.")
+#         return
     
-    # Находим все посты iPhone
-    async with Session() as s:
-        iphone_posts = (await s.execute(
-            select(MonitoredPost)
-            .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
-            .where(MonitoredPost.is_active == True)
-            .where(MonitoredPost.category.ilike('%🍏 iPhone%'))
-            .order_by(MonitoredPost.message_id)
-        )).scalars().all()
+#     # Находим все посты iPhone
+#     async with Session() as s:
+#         iphone_posts = (await s.execute(
+#             select(MonitoredPost)
+#             .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
+#             .where(MonitoredPost.is_active == True)
+#             .where(MonitoredPost.category.ilike('%🍏 iPhone%'))
+#             .order_by(MonitoredPost.message_id)
+#         )).scalars().all()
     
-    if not iphone_posts:
-        await m.answer("❌ Товары iPhone не найдены.", reply_markup=filter_menu_kb())
-        return
+#     if not iphone_posts:
+#         await m.answer("❌ Товары iPhone не найдены.", reply_markup=filter_menu_kb())
+#         return
     
-    # Собираем все message_id для поиска
-    message_ids = [post.message_id for post in iphone_posts]
+#     # Собираем все message_id для поиска
+#     message_ids = [post.message_id for post in iphone_posts]
     
-    # Получаем товары
-    items = []
-    async with Session() as s:
-        if show_all:
-            # Показываем все товары iPhone
-            where_clause = and_(
-                Product.channel_id == CHANNEL_ID_OPT,
-                Product.group_message_id.in_(message_ids),
-                Product.available == True,
-                Product.price_wholesale != None,
-            )
-        else:
-            # Фильтруем по is_used
-            where_clause = and_(
-                Product.channel_id == CHANNEL_ID_OPT,
-                Product.group_message_id.in_(message_ids),
-                Product.is_used == show_used,
-                Product.available == True,
-                Product.price_wholesale != None,
-            )
+#     # Получаем товары
+#     items = []
+#     async with Session() as s:
+#         if show_all:
+#             # Показываем все товары iPhone
+#             where_clause = and_(
+#                 Product.channel_id == CHANNEL_ID_OPT,
+#                 Product.group_message_id.in_(message_ids),
+#                 Product.available == True,
+#                 Product.price_wholesale != None,
+#             )
+#         else:
+#             # Фильтруем по is_used
+#             where_clause = and_(
+#                 Product.channel_id == CHANNEL_ID_OPT,
+#                 Product.group_message_id.in_(message_ids),
+#                 Product.is_used == show_used,
+#                 Product.available == True,
+#                 Product.price_wholesale != None,
+#             )
         
-        items = list((await s.execute(
-            select(Product).where(where_clause).order_by(Product.price_wholesale.desc())
-        )).scalars())
+#         items = list((await s.execute(
+#             select(Product).where(where_clause).order_by(Product.price_wholesale.desc())
+#         )).scalars())
     
-    if not items:
-        filter_text = "всех" if show_all else ("Б/У" if show_used else "новых")
-        await m.answer(f"❌ Товары iPhone ({filter_text}) не найдены.", reply_markup=filter_menu_kb())
-        return
+#     if not items:
+#         filter_text = "всех" if show_all else ("Б/У" if show_used else "новых")
+#         await m.answer(f"❌ Товары iPhone ({filter_text}) не найдены.", reply_markup=filter_menu_kb())
+#         return
     
-    # Создаем кнопки товаров
-    buttons = []
-    MAX_LENGTH = get_adaptive_button_length(m.from_user.id if m.from_user else None)
+#     # Создаем кнопки товаров
+#     buttons = []
+#     MAX_LENGTH = get_adaptive_button_length(m.from_user.id if m.from_user else None)
     
-    # Показываем все товары при входе в раздел
-    if not items:
-        await m.answer("❌ Товары iPhone не найдены.", reply_markup=filter_menu_kb())
-        return
+#     # Показываем все товары при входе в раздел
+#     if not items:
+#         await m.answer("❌ Товары iPhone не найдены.", reply_markup=filter_menu_kb())
+#         return
     
-    for p in items:
-        price = int(p.price_wholesale or 0)
-        flag = ""
-        try:
-            ea = dict(p.extra_attrs or {})
-            flag = (ea.get("flag") or "").strip()
-        except Exception:
-            flag = ""
+#     for p in items:
+#         price = int(p.price_wholesale or 0)
+#         flag = ""
+#         try:
+#             ea = dict(p.extra_attrs or {})
+#             flag = (ea.get("flag") or "").strip()
+#         except Exception:
+#             flag = ""
         
-        name = (p.name or "").strip()
-        # Создаем полное название без флага в начале
-        full_name = name
+#         name = (p.name or "").strip()
+#         # Создаем полное название без флага в начале
+#         full_name = name
         
-        # Добавляем цену с флагом вместо точки
-        if price > 0:
-            flag_separator = f" {flag} " if flag else " · "
-            suffix = f"{flag_separator}{fmt_price(price)} ₽"
-        else:
-            suffix = ""
-        full_text_with_suffix = f"{full_name}{suffix}"
+#         # Добавляем цену с флагом вместо точки
+#         if price > 0:
+#             flag_separator = f" {flag} " if flag else " · "
+#             suffix = f"{flag_separator}{fmt_price(price)} ₽"
+#         else:
+#             suffix = ""
+#         full_text_with_suffix = f"{full_name}{suffix}"
         
-        # Обрезка как в cb_category
-        if len(full_text_with_suffix) > MAX_LENGTH:
-            suffix_len = len(suffix)
-            available_name_length = MAX_LENGTH - suffix_len - 3
+#         # Обрезка как в cb_category
+#         if len(full_text_with_suffix) > MAX_LENGTH:
+#             suffix_len = len(suffix)
+#             available_name_length = MAX_LENGTH - suffix_len - 3
             
-            if available_name_length < 3:
-                if suffix_len <= MAX_LENGTH - 3:
-                    title = "..." + suffix
-                else:
-                    title = suffix[:MAX_LENGTH-3] + "..."
-            else:
-                if len(full_name) <= available_name_length:
-                    short_name = full_name
-                else:
-                    short_name = full_name[:available_name_length] + "..."
-                title = f"{short_name}{suffix}"
-        else:
-            title = full_text_with_suffix
+#             if available_name_length < 3:
+#                 if suffix_len <= MAX_LENGTH - 3:
+#                     title = "..." + suffix
+#                 else:
+#                     title = suffix[:MAX_LENGTH-3] + "..."
+#             else:
+#                 if len(full_name) <= available_name_length:
+#                     short_name = full_name
+#                 else:
+#                     short_name = full_name[:available_name_length] + "..."
+#                 title = f"{short_name}{suffix}"
+#         else:
+#             title = full_text_with_suffix
             
-        buttons.append((title, f"p|{p.id}|{p.group_message_id}|{1 if p.is_used else 0}|1"))
+#         buttons.append((title, f"p|{p.id}|{p.group_message_id}|{1 if p.is_used else 0}|1"))
     
-    grid = adaptive_kb(buttons, max_per_row=2, max_row_chars=MAX_LENGTH)
+#     grid = adaptive_kb(buttons, max_per_row=2, max_row_chars=MAX_LENGTH)
     
-    # Добавляем кнопку "Назад к фильтрам"
-    back_row = [InlineKeyboardButton(text="⬅️ Назад к фильтрам", callback_data="back_to_filters")]
-    kb = merge_kb(grid, [back_row])
+#     # Добавляем кнопку "Назад к фильтрам"
+#     back_row = [InlineKeyboardButton(text="⬅️ Назад к фильтрам", callback_data="back_to_filters")]
+#     kb = merge_kb(grid, [back_row])
     
-    filter_text = "всех" if show_all else ("Б/У" if show_used else "новых")
-    caption = f"📱 <b>iPhone ({filter_text})</b>\n\nТоваров: {len(items)}"
+#     filter_text = "всех" if show_all else ("Б/У" if show_used else "новых")
+#     caption = f"📱 <b>iPhone ({filter_text})</b>\n\nТоваров: {len(items)}"
     
-    await m.answer(caption, reply_markup=kb, parse_mode="HTML")
+#     await m.answer(caption, reply_markup=kb, parse_mode="HTML")
 
-async def show_iphone_products_by_model(m: Message, model: str):
-    """Показать iPhone определенной модели"""
-    if not CHANNEL_ID_OPT:
-        await m.answer("❌ Оптовый канал не настроен.")
-        return
+# async def show_iphone_products_by_model(m: Message, model: str):
+#     """Показать iPhone определенной модели"""
+#     if not CHANNEL_ID_OPT:
+#         await m.answer("❌ Оптовый канал не настроен.")
+#         return
     
-    # Находим все посты iPhone по категории, либо по keyword в monitored_posts, либо fallback по Product.category
-    async with Session() as s:
-        iphone_posts = (await s.execute(
-            select(MonitoredPost)
-            .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
-            .where(MonitoredPost.is_active == True)
-            .where(or_(
-                MonitoredPost.category.ilike('%iPhone%'),
-                MonitoredPost.category.ilike('%айфон%')
-            ))
-            .order_by(MonitoredPost.message_id)
-        )).scalars().all()
+#     # Находим все посты iPhone по категории, либо по keyword в monitored_posts, либо fallback по Product.category
+#     async with Session() as s:
+#         iphone_posts = (await s.execute(
+#             select(MonitoredPost)
+#             .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
+#             .where(MonitoredPost.is_active == True)
+#             .where(or_(
+#                 MonitoredPost.category.ilike('%iPhone%'),
+#                 MonitoredPost.category.ilike('%айфон%')
+#             ))
+#             .order_by(MonitoredPost.message_id)
+#         )).scalars().all()
     
-    if not iphone_posts:
-        await m.answer("❌ Товары iPhone не найдены.", reply_markup=iphone_models_kb())
-        return
+#     if not iphone_posts:
+#         await m.answer("❌ Товары iPhone не найдены.", reply_markup=iphone_models_kb())
+#         return
     
-    message_ids = [post.message_id for post in iphone_posts]
+#     message_ids = [post.message_id for post in iphone_posts]
     
-    # Получаем товары с фильтрацией по модели (по вхождению цифры модели и вариантов Pro/Max/Plus)
-    items = []
-    async with Session() as s:
-        where_clause = and_(
-            Product.channel_id == CHANNEL_ID_OPT,
-            Product.group_message_id.in_(message_ids),
-            Product.available == True,
-            Product.price_wholesale != None,
-            or_(
-                Product.name.ilike(f'%{model}%'),
-                Product.category.ilike(f'%{model}%')
-            )
-        )
+#     # Получаем товары с фильтрацией по модели (по вхождению цифры модели и вариантов Pro/Max/Plus)
+#     items = []
+#     async with Session() as s:
+#         where_clause = and_(
+#             Product.channel_id == CHANNEL_ID_OPT,
+#             Product.group_message_id.in_(message_ids),
+#             Product.available == True,
+#             Product.price_wholesale != None,
+#             or_(
+#                 Product.name.ilike(f'%{model}%'),
+#                 Product.category.ilike(f'%{model}%')
+#             )
+#         )
         
-        items = list((await s.execute(
-            select(Product).where(where_clause).order_by(Product.price_wholesale.desc())
-        )).scalars())
+#         items = list((await s.execute(
+#             select(Product).where(where_clause).order_by(Product.price_wholesale.desc())
+#         )).scalars())
     
-    if not items:
-        await m.answer(f"❌ iPhone {model} не найдены.", reply_markup=iphone_models_kb())
-        return
+#     if not items:
+#         await m.answer(f"❌ iPhone {model} не найдены.", reply_markup=iphone_models_kb())
+#         return
     
-    # Создаем кнопки товаров
-    await _create_iphone_buttons(m, items, f"iPhone {model}")
+#     # Создаем кнопки товаров
+#     await _create_iphone_buttons(m, items, f"iPhone {model}")
 
-async def show_iphone_products_by_memory(m: Message, memory: str):
-    """Показать iPhone с определенным объемом памяти"""
-    if not CHANNEL_ID_OPT:
-        await m.answer("❌ Оптовый канал не настроен.")
-        return
+# async def show_iphone_products_by_memory(m: Message, memory: str):
+#     """Показать iPhone с определенным объемом памяти"""
+#     if not CHANNEL_ID_OPT:
+#         await m.answer("❌ Оптовый канал не настроен.")
+#         return
     
-    # Находим все посты iPhone по категории
-    async with Session() as s:
-        iphone_posts = (await s.execute(
-            select(MonitoredPost)
-            .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
-            .where(MonitoredPost.is_active == True)
-            .where(or_(
-                MonitoredPost.category.ilike('%iPhone%'),
-                MonitoredPost.category.ilike('%айфон%')
-            ))
-            .order_by(MonitoredPost.message_id)
-        )).scalars().all()
+#     # Находим все посты iPhone по категории
+#     async with Session() as s:
+#         iphone_posts = (await s.execute(
+#             select(MonitoredPost)
+#             .where(MonitoredPost.channel_id == CHANNEL_ID_OPT)
+#             .where(MonitoredPost.is_active == True)
+#             .where(or_(
+#                 MonitoredPost.category.ilike('%iPhone%'),
+#                 MonitoredPost.category.ilike('%айфон%')
+#             ))
+#             .order_by(MonitoredPost.message_id)
+#         )).scalars().all()
     
-    if not iphone_posts:
-        await m.answer("❌ Товары iPhone не найдены.", reply_markup=iphone_memory_kb())
-        return
+#     if not iphone_posts:
+#         await m.answer("❌ Товары iPhone не найдены.", reply_markup=iphone_memory_kb())
+#         return
     
-    message_ids = [post.message_id for post in iphone_posts]
+#     message_ids = [post.message_id for post in iphone_posts]
     
-    # Получаем товары с фильтрацией по памяти (по token в name либо в category)
-    items = []
-    async with Session() as s:
-        where_clause = and_(
-            Product.channel_id == CHANNEL_ID_OPT,
-            Product.group_message_id.in_(message_ids),
-            Product.available == True,
-            Product.price_wholesale != None,
-            or_(
-                Product.name.ilike(f'%{memory}%'),
-                Product.category.ilike(f'%{memory}%')
-            )
-        )
+#     # Получаем товары с фильтрацией по памяти (по token в name либо в category)
+#     items = []
+#     async with Session() as s:
+#         where_clause = and_(
+#             Product.channel_id == CHANNEL_ID_OPT,
+#             Product.group_message_id.in_(message_ids),
+#             Product.available == True,
+#             Product.price_wholesale != None,
+#             or_(
+#                 Product.name.ilike(f'%{memory}%'),
+#                 Product.category.ilike(f'%{memory}%')
+#             )
+#         )
         
-        items = list((await s.execute(
-            select(Product).where(where_clause).order_by(Product.price_wholesale.desc())
-        )).scalars())
+#         items = list((await s.execute(
+#             select(Product).where(where_clause).order_by(Product.price_wholesale.desc())
+#         )).scalars())
     
-    if not items:
-        await m.answer(f"❌ iPhone с памятью {memory} не найдены.", reply_markup=iphone_memory_kb())
-        return
+#     if not items:
+#         await m.answer(f"❌ iPhone с памятью {memory} не найдены.", reply_markup=iphone_memory_kb())
+#         return
     
-    # Создаем кнопки товаров
-    await _create_iphone_buttons(m, items, f"iPhone {memory}")
+#     # Создаем кнопки товаров
+#     await _create_iphone_buttons(m, items, f"iPhone {memory}")
 
-async def _create_iphone_buttons(m: Message, items: List[Product], title: str, page: int = 0, per_page: int = 24):
-    """Создать кнопки товаров iPhone с пагинацией"""
-    buttons = []
-    MAX_LENGTH = get_adaptive_button_length(m.from_user.id if m.from_user else None)
+# async def _create_iphone_buttons(m: Message, items: List[Product], title: str, page: int = 0, per_page: int = 24):
+#     """Создать кнопки товаров iPhone с пагинацией"""
+#     buttons = []
+#     MAX_LENGTH = get_adaptive_button_length(m.from_user.id if m.from_user else None)
     
-    # Пагинация
-    start_idx = page * per_page
-    end_idx = start_idx + per_page
-    page_items = items[start_idx:end_idx]
-    total_pages = (len(items) + per_page - 1) // per_page
+#     # Пагинация
+#     start_idx = page * per_page
+#     end_idx = start_idx + per_page
+#     page_items = items[start_idx:end_idx]
+#     total_pages = (len(items) + per_page - 1) // per_page
     
-    for p in page_items:
-        price = int(p.price_wholesale or 0)
-        flag = ""
-        try:
-            ea = dict(p.extra_attrs or {})
-            flag = (ea.get("flag") or "").strip()
-        except Exception:
-            flag = ""
+#     for p in page_items:
+#         price = int(p.price_wholesale or 0)
+#         flag = ""
+#         try:
+#             ea = dict(p.extra_attrs or {})
+#             flag = (ea.get("flag") or "").strip()
+#         except Exception:
+#             flag = ""
         
-        name = (p.name or "").strip()
-        # Создаем полное название без флага в начале
-        full_name = name
+#         name = (p.name or "").strip()
+#         # Создаем полное название без флага в начале
+#         full_name = name
         
-        # Добавляем цену с флагом вместо точки
-        if price > 0:
-            flag_separator = f" {flag} " if flag else " · "
-            suffix = f"{flag_separator}{fmt_price(price)} ₽"
-        else:
-            suffix = ""
-        full_text_with_suffix = f"{full_name}{suffix}"
+#         # Добавляем цену с флагом вместо точки
+#         if price > 0:
+#             flag_separator = f" {flag} " if flag else " · "
+#             suffix = f"{flag_separator}{fmt_price(price)} ₽"
+#         else:
+#             suffix = ""
+#         full_text_with_suffix = f"{full_name}{suffix}"
         
-        # Обрезка как в cb_category
-        if len(full_text_with_suffix) > MAX_LENGTH:
-            suffix_len = len(suffix)
-            available_name_length = MAX_LENGTH - suffix_len - 3
+#         # Обрезка как в cb_category
+#         if len(full_text_with_suffix) > MAX_LENGTH:
+#             suffix_len = len(suffix)
+#             available_name_length = MAX_LENGTH - suffix_len - 3
             
-            if available_name_length < 3:
-                if suffix_len <= MAX_LENGTH - 3:
-                    title_text = "..." + suffix
-                else:
-                    title_text = suffix[:MAX_LENGTH-3] + "..."
-            else:
-                if len(full_name) <= available_name_length:
-                    short_name = full_name
-                else:
-                    short_name = full_name[:available_name_length] + "..."
-                title_text = f"{short_name}{suffix}"
-        else:
-            title_text = full_text_with_suffix
+#             if available_name_length < 3:
+#                 if suffix_len <= MAX_LENGTH - 3:
+#                     title_text = "..." + suffix
+#                 else:
+#                     title_text = suffix[:MAX_LENGTH-3] + "..."
+#             else:
+#                 if len(full_name) <= available_name_length:
+#                     short_name = full_name
+#                 else:
+#                     short_name = full_name[:available_name_length] + "..."
+#                 title_text = f"{short_name}{suffix}"
+#         else:
+#             title_text = full_text_with_suffix
             
-        buttons.append((title_text, f"p|{p.id}|{p.group_message_id}|{1 if p.is_used else 0}|1"))
+#         buttons.append((title_text, f"p|{p.id}|{p.group_message_id}|{1 if p.is_used else 0}|1"))
     
-    grid = adaptive_kb(buttons, max_per_row=2, max_row_chars=MAX_LENGTH)
+#     grid = adaptive_kb(buttons, max_per_row=2, max_row_chars=MAX_LENGTH)
     
-    # Добавляем пагинацию если нужно
-    if total_pages > 1:
-        pagination = paginate_bar(page, total_pages, "iphone_prev", "iphone_info", "iphone_next")
-        grid = merge_kb(grid, pagination)
+#     # Добавляем пагинацию если нужно
+#     if total_pages > 1:
+#         pagination = paginate_bar(page, total_pages, "iphone_prev", "iphone_info", "iphone_next")
+#         grid = merge_kb(grid, pagination)
     
-    # Добавляем кнопку "Назад к фильтрам"
-    back_row = [InlineKeyboardButton(text="⬅️ Назад к фильтрам", callback_data="back_to_filters")]
-    kb = merge_kb(grid, [back_row])
+#     # Добавляем кнопку "Назад к фильтрам"
+#     back_row = [InlineKeyboardButton(text="⬅️ Назад к фильтрам", callback_data="back_to_filters")]
+#     kb = merge_kb(grid, [back_row])
     
-    caption = f"📱 <b>{title}</b>\n\nТоваров: {len(items)}"
-    await m.answer(caption, reply_markup=kb, parse_mode="HTML")
+#     caption = f"📱 <b>{title}</b>\n\nТоваров: {len(items)}"
+#     await m.answer(caption, reply_markup=kb, parse_mode="HTML")
 
 @dp.message(F.text.in_([BTN_RESCAN, BTN_RESCAN_ADMIN]))
 async def on_rescan_button(m: Message):
@@ -5226,6 +5226,42 @@ async def cancel_admin_remove(c: CallbackQuery):
     PENDING_ADMIN_REMOVE.pop(c.from_user.id, None)
     await c.message.edit_text("❌ Удаление админа отменено")
     await c.answer()
+
+async def main_menu_kb(user_id: Optional[int]) -> ReplyKeyboardMarkup:
+    # Формируем текст кнопки корзины с количеством товаров
+    cart_text = BTN_CART
+    if user_id:
+        try:
+            cart_count = await cart_count_db(user_id)
+            if cart_count > 0:
+                cart_text = f"{BTN_CART} ({cart_count})"
+        except Exception:
+            pass  # Если ошибка, используем стандартный текст
+    
+    rows = [  # type: list[list[KeyboardButton]]
+        [KeyboardButton(text=BTN_CATALOG)],
+        [KeyboardButton(text=BTN_CONTACTS), KeyboardButton(text=cart_text)],
+    ]
+    
+    # Проверяем права админа (из .env или БД)
+    is_manager = False
+    if user_id:
+        # Сначала проверяем .env (для обратной совместимости)
+        if MANAGER_USER_IDS and user_id in MANAGER_USER_IDS:
+            is_manager = True
+        else:
+            # Проверяем в БД
+            try:
+                is_manager = await is_admin(user_id, channel_type='wholesale')
+            except Exception:
+                pass  # Если ошибка, считаем что не админ
+    
+    # Добавляем админские кнопки если пользователь админ
+    if is_manager:
+        rows.append([KeyboardButton(text=BTN_RESCAN_ADMIN), KeyboardButton(text=BTN_DIAG_ADMIN)])
+        rows.append([KeyboardButton(text=BTN_SETTINGS_ADMIN)])
+    
+    return ReplyKeyboardMarkup(keyboard=rows, resize_keyboard=True)
 
 async def main():
     """Основная функция запуска бота"""
