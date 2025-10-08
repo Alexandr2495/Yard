@@ -1698,7 +1698,7 @@ async def on_diag(m: Message):
             select(func.count()).select_from(Order).where(
                 and_(
                     Order.order_type == "retail",
-                    Order.created_at >= datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0)
+                    Order.created_at >= datetime.now(UTC).replace(hour=0, minute=0, second=0, microsecond=0).replace(tzinfo=None)
                 )
             )
         )).scalar_one()
