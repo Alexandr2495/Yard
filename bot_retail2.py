@@ -1468,7 +1468,7 @@ async def upsert_for_message_rescan(channel_id: int, message_id: int, category: 
     """
     Мини-версия upsert логики для /rescan. Обновляет товары по одному посту.
     """
-    now = datetime.now(UTC)
+    now = datetime.now(UTC).replace(tzinfo=None)
     rows = parse_lines(text)
     keys_in_post = set()
 

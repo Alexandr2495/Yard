@@ -123,7 +123,7 @@ class ConsentManager:
             if user_consent:
                 user_consent.marketing_consent = consent
                 user_consent.marketing_consent_date = datetime.now(UTC).replace(tzinfo=None) if consent else None
-                user_consent.updated_at = datetime.now(UTC)
+                user_consent.updated_at = datetime.now(UTC).replace(tzinfo=None)
                 await session.commit()
                 return True
             return False
