@@ -1396,7 +1396,7 @@ async def _safe_copy_and_read_text(bot: Bot, sink_id: int, from_chat_id: int, me
 # Функция /rescan для розничного бота
 async def cmd_rescan(message: Message):
     """Перескан товаров из розничного канала"""
-    if not message.from_user or message.from_user.id not in MANAGER_USER_IDS:
+    if not message.from_user or not await _is_manager(message.from_user.id, message.from_user.username, 'retail'):
         await message.answer("⛔ Недостаточно прав.")
         return
     
@@ -1669,7 +1669,7 @@ async def on_rescan_button(m: Message):
 @dp.message(F.text.in_([BTN_DIAG, BTN_DIAG_ADMIN]))
 @dp.message(Command("diag"))
 async def on_diag(m: Message):
-    if not m.from_user or m.from_user.id not in MANAGER_USER_IDS:
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
         await m.answer("⛔ Недостаточно прав.")
         return
     
@@ -1815,7 +1815,7 @@ async def on_diag(m: Message):
 @dp.message(Command("fix_categories"))
 async def cmd_fix_categories(m: Message):
     """Админ-команда: пересинхронизировать категории товаров из monitored_posts по message_id."""
-    if not m.from_user or m.from_user.id not in MANAGER_USER_IDS:
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
         await m.answer("⛔ Недостаточно прав.")
         return
     if not CHANNEL_ID_OPT:
@@ -2374,7 +2374,7 @@ def templates_list_kb() -> InlineKeyboardMarkup:
 @dp.message(F.text.in_([BTN_SETTINGS, BTN_SETTINGS_ADMIN]))
 @dp.message(Command("settings"))
 async def on_settings(m: Message):
-    if not m.from_user or m.from_user.id not in MANAGER_USER_IDS:
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
         await m.answer("⛔ Недостаточно прав.")
         return
     await m.answer("⚙️ <b>Настройки</b>\nВыберите раздел:", parse_mode="HTML", reply_markup=settings_root_kb())
@@ -2827,14 +2827,14 @@ async def settings_monitoring_compare(c: CallbackQuery):
 # --- Командные настройки (совместимость) ---
 @dp.message(Command("get_contacts"))
 async def on_get_contacts(m: Message):
-    if not m.from_user or m.from_user.id not in MANAGER_USER_IDS:
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
         await m.answer("⛔ Недостаточно прав.")
         return
     await m.answer(await get_contacts_text())
 
 @dp.message(Command("set_contacts"))
 async def on_set_contacts(m: Message):
-    if not m.from_user or m.from_user.id not in MANAGER_USER_IDS:
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
         await m.answer("⛔ Недостаточно прав.")
         return
     txt = (m.text or "").split(None, 1)
@@ -2846,7 +2846,7 @@ async def on_set_contacts(m: Message):
 
 @dp.message(Command("get_template"))
 async def on_get_tpl(m: Message):
-    if not m.from_user or m.from_user.id not in MANAGER_USER_IDS:
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
         await m.answer("⛔ Недостаточно прав.")
         return
     parts = (m.text or "").split(None, 1)
@@ -2859,7 +2859,7 @@ async def on_get_tpl(m: Message):
 
 @dp.message(Command("set_template"))
 async def on_set_tpl(m: Message):
-    if not m.from_user or m.from_user.id not in MANAGER_USER_IDS:
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
         await m.answer("⛔ Недостаточно прав.")
         return
     parts = (m.text or "").split(None, 1)
