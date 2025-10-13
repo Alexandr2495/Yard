@@ -89,7 +89,8 @@ def _category_for(channel_id, message_id):
 # Инициализация WATCH будет в main() после загрузки настроек из БД
 
 # ------------- parsing -------------
-PRICE_RE = re.compile(r"^\s*(?P<name>.+?)\s*[-:]\s*(?P<price>[\d\s]{2,})(?P<rest>.*)$")
+# Разрешаем юникодные дефисы (– — ‑) и запятую в цене
+PRICE_RE = re.compile(r"^\s*(?P<name>.+?)\s*[-:–—‑]\s*(?P<price>[\d\s.,]{2,})(?P<rest>.*)$")
 
 def _extract_flag(text):
     """Попробовать извлечь флаг (emoji-флаг страны) из строки."""
