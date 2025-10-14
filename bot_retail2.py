@@ -86,6 +86,7 @@ DEFAULT_CONTACTS = (
 DEFAULT_TEMPLATES = {  # type: Dict[str, str]
     "order_received": (
         "🎉 <b>Заявка успешно принята!</b>\n\n"
+        "🧾 <b>Номер заказа:</b> #{order_id}\n"
         "📦 <b>Товар:</b> {product_name}\n"
         "🔢 <b>Количество:</b> {quantity} шт.\n"
         "💰 <b>Цена за штуку:</b> {price_each} ₽\n"
@@ -96,6 +97,7 @@ DEFAULT_TEMPLATES = {  # type: Dict[str, str]
     ),
     "order_placed_single": (
         "✅ <b>Заказ оформлен (1 товар)</b>\n\n"
+        "🧾 <b>Номер заказа:</b> #{order_id}\n"
         "📦 <b>Товар:</b> {product_name}\n"
         "🔢 <b>Количество:</b> {quantity} шт.\n"
         "💰 <b>Цена за штуку:</b> {price_each} ₽\n"
@@ -105,24 +107,13 @@ DEFAULT_TEMPLATES = {  # type: Dict[str, str]
     ),
     "order_placed_multiple": (
         "✅ <b>Заказ оформлен (несколько товаров)</b>\n\n"
+        "🧾 <b>Номера заказов:</b> {order_ids}\n"
         "📦 <b>Товары в заказе:</b>\n"
         "{cart_items}\n\n"
         "📊 <b>Итоги:</b>\n"
         "• Позиций в заказе: <b>{items_count}</b>\n"
         "• Итоговая сумма: <b>{total} ₽</b>\n\n"
         "📍 Оплатить и забрать свой заказ Вы сможете по адресу: <b>{address}</b>\n\n"
-        "{contacts}"
-    ),
-    "cart_checkout_summary": (
-        "🛒 <b>Корзина успешно оформлена!</b>\n\n"
-        "🎊 <b>Поздравляем!</b> Ваш заказ из корзины принят к обработке.\n\n"
-        "📦 <b>Товары в заказе:</b>\n"
-        "{cart_items}\n\n"
-        "📊 <b>Итоги:</b>\n"
-        "• Позиций в заказе: <b>{items_count}</b>\n"
-        "• Итоговая сумма: <b>{total} ₽</b>\n\n"
-        "⏳ <i>Все товары из корзины переданы менеджеру. "
-        "Мы свяжемся с вами для подтверждения деталей заказа!</i>\n\n"
         "{contacts}"
     ),
     "admin_order_notification_personal": (
@@ -596,7 +587,7 @@ async def get_category_name(message_id: int) -> str:
             return post.category or "Без категории"
         return "Неизвестная категория"
 
-async def fetch_products_page(group_message_id: int, is_used: bool, page: int, per_page: int = 24, multi_message_ids = None):  # type: (int, bool, int, int, List[int]) -> tuple[List[Product], int, int, int]
+async def fetch_products_page(group_message_id: int, is_used: bool, page: int, per_page: int = 60, multi_message_ids = None):  # type: (int, bool, int, int, List[int]) -> tuple[List[Product], int, int, int]
     """
     Возвращает (items, total, pages, page). 
     Если multi_message_ids задан, ищет товары во всех указанных постах.
@@ -962,6 +953,7 @@ async def cb_order_make(call: CallbackQuery):
                 uid,
                 render_template(
                     tpl,
+                    order_id=order.id,
                     product_name=f"{prod.name}{(dict(prod.extra_attrs or {}).get('flag') or '')}",
                     quantity=qty,
                     price_each=fmt_price(price_each),
@@ -1220,6 +1212,8 @@ async def cb_cart_checkout(call: CallbackQuery):
     total_items_count = sum(int(it["qty"]) for it in items)
     
     tpl_cart = await get_template("order_placed_multiple")
+    # Собираем список номеров заказов
+    order_ids = ", ".join(f"#{o.id}" for o, _, _, _ in created_orders)
     try:
         await bot.send_message(
             uid,
@@ -1227,7 +1221,8 @@ async def cb_cart_checkout(call: CallbackQuery):
                           items_count=total_items_count, 
                           total=fmt_price(total_sum), 
                           contacts=contacts,
-                          cart_items=cart_items_text.strip()),
+                          cart_items=cart_items_text.strip(),
+                          order_ids=order_ids),
             disable_notification=True
         )
     except Exception:
@@ -2542,9 +2537,9 @@ async def settings_template_edit(c: CallbackQuery):
     PENDING_TEMPLATE_EDIT[c.from_user.id] = name
     # Определяем плейсхолдеры для каждого шаблона
     placeholders_by_tpl = {
-        "order_received": "{product_name}, {quantity}, {price_each}, {total}, {contacts}",
-        "order_placed_single": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
-        "order_placed_multiple": "{cart_items}, {items_count}, {total}, {address}, {contacts}",
+        "order_received": "{order_id}, {product_name}, {quantity}, {price_each}, {total}, {contacts}",
+        "order_placed_single": "{order_id}, {product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
+        "order_placed_multiple": "{order_id}, {cart_items}, {items_count}, {total}, {address}, {contacts}",
         "admin_order_notification_personal": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}",
         "admin_order_notification_group": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}"
     }
@@ -2886,9 +2881,9 @@ async def on_set_tpl(m: Message):
     PENDING_TEMPLATE_EDIT[m.from_user.id] = name
     # Определяем плейсхолдеры для каждого шаблона
     placeholders_by_tpl = {
-        "order_received": "{product_name}, {quantity}, {price_each}, {total}, {contacts}",
-        "order_placed_single": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
-        "order_placed_multiple": "{cart_items}, {items_count}, {total}, {address}, {contacts}",
+        "order_received": "{order_id}, {product_name}, {quantity}, {price_each}, {total}, {contacts}",
+        "order_placed_single": "{order_id}, {product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
+        "order_placed_multiple": "{order_id}, {cart_items}, {items_count}, {total}, {address}, {contacts}",
         "admin_order_notification_personal": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}",
         "admin_order_notification_group": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}"
     }
@@ -3745,8 +3740,33 @@ async def on_possible_settings_text(m: Message):
 
 # Глобальный обработчик ошибок
 @dp.error()
-async def error_handler(event, exception):
-    """Обработка ошибок"""
+async def error_handler(event):
+    """Обработка ошибок (совместимо с aiogram v3 ErrorEvent)."""
+    exception = getattr(event, "exception", None)
+    if exception is None:
+        return False
+    # Пытаемся дать пользователю отклик и уведомить админов
+    try:
+        upd = getattr(event, "update", None)
+        msg = None
+        if upd is not None:
+            # message
+            m_candidate = getattr(upd, "message", None)
+            if m_candidate is not None:
+                msg = m_candidate
+            else:
+                # callback -> use original message
+                cq = getattr(upd, "callback_query", None)
+                if cq is not None and getattr(cq, "message", None) is not None:
+                    msg = cq.message
+        if msg is not None and getattr(msg, "chat", None) and getattr(msg.chat, "type", "") == "private":
+            try:
+                await msg.answer("❌ Произошла ошибка при обработке запроса. Попробуйте позже.")
+            except Exception:
+                pass
+    except Exception:
+        # Не позволяем обработчику ошибок падать
+        pass
     if isinstance(exception, TelegramMigrateToChat):
         log.warning(f"Chat migrated to supergroup: {exception.migrate_to_chat_id}")
         return True  # Игнорируем ошибку

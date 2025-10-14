@@ -4817,7 +4817,7 @@ async def _notify_managers_new_order(order, prod_name: str, price_each: int):
             log.error(f"Failed to send group notification for order {order.id}: {e}")
             sent_msg = None
     
-    # Отправляем уведомление отдельным менеджерам
+    # Отправляем уведомление отдельным менеджерам (без кнопок — решение принимается только в группе)
     for manager_id in MANAGER_USER_IDS:
         try:
             msg_personal = render_template(template_personal,
@@ -4829,7 +4829,7 @@ async def _notify_managers_new_order(order, prod_name: str, price_each: int):
                 price_each=fmt_price(price_each),
                 total_price=fmt_price(total)
             )
-            await bot.send_message(manager_id, msg_personal, reply_markup=_manager_decision_kb(order.id), disable_notification=True)
+            await bot.send_message(manager_id, msg_personal, disable_notification=True)
             log.info(f"Wholesale order notification sent to manager {manager_id}: {order.id}")
         except Exception as e:
             log.warning(f"Failed to notify manager {manager_id}: {e}")
@@ -4951,6 +4951,7 @@ async def cb_order_moderate(call: CallbackQuery):
                 await call.message.reply("❌ <b>Заказ отклонён</b>\n\n💬 <i>Покупатель уведомлён об отказе.</i>\n\n🔄 <i>Заказ завершён.</i>")
             except Exception:
                 pass
+            # Уведомляем покупателя об отказе
             await _notify_buyer_decision(oid, approved=False)
             await call.answer("Отклонено")
             return
@@ -4962,7 +4963,11 @@ async def cb_order_moderate(call: CallbackQuery):
                 await call.message.edit_reply_markup(reply_markup=None)
             except Exception:
                 pass
-            # после утверждения — отдельным сообщением просьба прислать фото
+            # после утверждения — уведомляем покупателя и просим в группе фото при необходимости
+            try:
+                await _notify_buyer_decision(oid, approved=True)
+            except Exception as e:
+                log.error(f"Error notifying buyer on approve: {e}")
             try:
                 await call.message.reply(
                     "✅ <b>Заказ подтверждён!</b>\n\n"
@@ -5006,13 +5011,11 @@ async def cb_skip_photo(call: CallbackQuery):
         except Exception as e2:
             log.error(f"Error sending reply: {e2}")
     
-    # Уведомляем покупателя
+    # Не уведомляем покупателя здесь — уведомление уходит при решении approve/reject (в группе)
     try:
-        await _notify_buyer_decision(oid, approved=True, serial_text=None, photo_file_id=None)
-        await call.answer("✅ Готово")
-    except Exception as e:
-        log.error(f"Error notifying buyer: {e}")
-        await call.answer("⚠️ Ошибка уведомления покупателя")
+        await call.answer("✅ Отмечено")
+    except Exception:
+        pass
 
 # --- OCR настройка ---
 ENABLE_OCR = (os.getenv("ENABLE_OCR", "false").lower() == "true")
