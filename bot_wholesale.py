@@ -1807,17 +1807,35 @@ async def cmd_rescan(message: Message):
 
 async def upsert_for_message_rescan(channel_id: int, message_id: int, category: str, text: str, is_used: bool):
     """
-    Мини-версия upsert логики для /rescan. Обновляет товары по одному посту.
+    Полная переиндексация товаров поста при перескане.
+    Сначала деактивирует все товары поста, затем создает/активирует с новыми индексами.
     """
     now = datetime.now(UTC).replace(tzinfo=None)
     rows = parse_lines(text)
-    keys_in_post = set()
 
     async with Session() as s:
+        # 1. Сначала деактивируем ВСЕ товары этого поста
+        await s.execute(
+            update(Product)
+            .where(
+                and_(
+                    Product.channel_id == channel_id,
+                    Product.group_message_id == message_id,
+                    Product.is_used == is_used
+                )
+            )
+            .values(
+                available=False,
+                order_index=None,
+                updated_at=now
+            )
+        )
+        
+        # 2. Затем создаем/активируем товары с новыми индексами
         for order_index, (name, price, flag) in enumerate(rows, 1):
             key = norm_key(name, flag)
-            keys_in_post.add(key)
-
+            
+            # Ищем существующий товар
             prod = (await s.execute(
                 select(Product).where(
                     and_(
@@ -1828,36 +1846,18 @@ async def upsert_for_message_rescan(channel_id: int, message_id: int, category: 
                     )
                 )
             )).scalar_one_or_none()
-
-            if not prod:
-                prod = Product(
-                    channel_id=channel_id,
-                    group_message_id=message_id,
-                    name=name[:400],
-                    key=key,
-                    category=category,
-                    available=True,
-                    is_used=is_used,
-                    order_index=order_index,
-                    extra_attrs=(
-                        {
-                            **(parse_used_attrs(name) if is_used else {}),
-                            **({"flag": flag} if flag else {})
-                        } or None
-                    ),
-                    updated_at=now
-                )
-                prod.price_wholesale = price
-                s.add(prod)
-            else:
-                prod.price_wholesale = price
+            
+            if prod:
+                # Обновляем существующий товар
                 prod.name = name[:400]
                 prod.available = True
                 prod.order_index = order_index
-                if category:
-                    prod.category = category
+                prod.price_wholesale = price
+                prod.category = category
                 prod.is_used = is_used
-                # Обновляем/дополняем extra_attrs
+                prod.updated_at = now
+                
+                # Обновляем extra_attrs
                 try:
                     cur = dict(prod.extra_attrs or {})
                 except Exception:
@@ -1867,25 +1867,27 @@ async def upsert_for_message_rescan(channel_id: int, message_id: int, category: 
                 if flag:
                     cur["flag"] = flag
                 prod.extra_attrs = cur or None
-                prod.updated_at = now
-
-        if keys_in_post:
-            await s.execute(
-                update(Product)
-                .where(
-                    and_(
-                        Product.channel_id == channel_id,
-                        Product.group_message_id == message_id,
-                        Product.is_used == is_used,
-                        not_(Product.key.in_(keys_in_post))
-                    )
-                )
-                .values(
-                    available=False,
-                    price_wholesale=None,
+            else:
+                # Создаем новый товар
+                prod = Product(
+                    channel_id=channel_id,
+                    group_message_id=message_id,
+                    name=name[:400],
+                    key=key,
+                    category=category,
+                    available=True,
+                    is_used=is_used,
+                    order_index=order_index,
+                    price_wholesale=price,
+                    extra_attrs=(
+                        {
+                            **(parse_used_attrs(name) if is_used else {}),
+                            **({"flag": flag} if flag else {})
+                        } or None
+                    ),
                     updated_at=now
                 )
-            )
+                s.add(prod)
 
         await s.commit()
 
