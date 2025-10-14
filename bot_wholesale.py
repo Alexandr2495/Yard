@@ -4166,7 +4166,7 @@ async def on_get_tpl(m: Message):
         return
     parts = (m.text or "").split(None, 1)
     if len(parts) < 2:
-        await m.answer("Укажите имя: /get_template order_received|order_approved|order_rejected|cart_checkout_summary")
+        await m.answer("Укажите имя: /get_template order_received|order_approved|order_rejected|cart_checkout_summary|admin_order_notification_personal|admin_order_notification_group")
         return
     name = parts[1].strip()
     tpl = await get_template(name)

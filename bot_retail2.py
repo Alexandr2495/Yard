@@ -954,8 +954,8 @@ async def cb_order_make(call: CallbackQuery):
         await s.commit()
 
         total = price_each * qty
-        # сообщение покупателю из шаблона (используем order_placed_single для розничного бота)
-        tpl = await get_template("order_placed_single")
+        # сообщение покупателю из шаблона (используем order_received для заявок)
+        tpl = await get_template("order_received")
         contacts = await get_contacts_text()
         try:
             await bot.send_message(
@@ -1219,7 +1219,7 @@ async def cb_cart_checkout(call: CallbackQuery):
     # Подсчитываем общее количество товаров (не уникальных позиций)
     total_items_count = sum(int(it["qty"]) for it in items)
     
-    tpl_cart = await get_template("cart_checkout_summary")
+    tpl_cart = await get_template("order_placed_multiple")
     try:
         await bot.send_message(
             uid,
@@ -2863,7 +2863,7 @@ async def on_get_tpl(m: Message):
         return
     parts = (m.text or "").split(None, 1)
     if len(parts) < 2:
-        await m.answer("Укажите имя: /get_template order_received|order_approved|order_rejected|cart_checkout_summary")
+        await m.answer("Укажите имя: /get_template order_received|order_placed_single|order_placed_multiple|admin_order_notification_personal|admin_order_notification_group")
         return
     name = parts[1].strip()
     tpl = await get_template(name)
