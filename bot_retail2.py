@@ -2542,6 +2542,7 @@ async def settings_template_edit(c: CallbackQuery):
     PENDING_TEMPLATE_EDIT[c.from_user.id] = name
     # Определяем плейсхолдеры для каждого шаблона
     placeholders_by_tpl = {
+        "order_received": "{product_name}, {quantity}, {price_each}, {total}, {contacts}",
         "order_placed_single": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
         "order_placed_multiple": "{cart_items}, {items_count}, {total}, {address}, {contacts}",
         "admin_order_notification_personal": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}",
@@ -2885,6 +2886,7 @@ async def on_set_tpl(m: Message):
     PENDING_TEMPLATE_EDIT[m.from_user.id] = name
     # Определяем плейсхолдеры для каждого шаблона
     placeholders_by_tpl = {
+        "order_received": "{product_name}, {quantity}, {price_each}, {total}, {contacts}",
         "order_placed_single": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
         "order_placed_multiple": "{cart_items}, {items_count}, {total}, {address}, {contacts}",
         "admin_order_notification_personal": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}",
