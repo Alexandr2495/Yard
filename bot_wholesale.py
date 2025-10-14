@@ -130,7 +130,7 @@ DEFAULT_TEMPLATES = {  # type: Dict[str, str]
     ),
     "cart_checkout_summary": (
         "🛒 <b>Корзина успешно оформлена!</b>\n\n"
-        "🎊 <b>Поздравляем!</b> Ваш заказ из корзины принят к обработке.\n\n"
+        "🧾 <b>Номера заказов:</b> {order_ids}\n\n"
         "📦 <b>Товары в заказе:</b>\n"
         "{cart_items}\n\n"
         "📊 <b>Итоги:</b>\n"
@@ -1298,6 +1298,7 @@ async def cb_order_make(call: CallbackQuery):
                 uid,
                 render_template(
                     tpl,
+                    order_id=order.id,
                     product_name=f"{prod.name}{(dict(prod.extra_attrs or {}).get('flag') or '')}",
                     quantity=qty,
                     price_each=fmt_price(price_each),
@@ -1570,10 +1571,13 @@ async def cb_cart_checkout(call: CallbackQuery):
     total_items_count = sum(int(it["qty"]) for it in items)
     
     tpl_cart = await get_template("cart_checkout_summary")
+    # Собираем список номеров заказов
+    order_ids = ", ".join(f"#{o.id}" for o, _, _, _ in created_orders)
     try:
         await bot.send_message(
             uid,
             render_template(tpl_cart, 
+                          order_ids=order_ids,
                           items_count=total_items_count, 
                           total=fmt_price(total_sum), 
                           contacts=contacts,

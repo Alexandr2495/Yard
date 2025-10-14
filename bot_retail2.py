@@ -945,9 +945,11 @@ async def cb_order_make(call: CallbackQuery):
         await s.commit()
 
         total = price_each * qty
-        # сообщение покупателю из шаблона (используем order_received для заявок)
-        tpl = await get_template("order_received")
+        # сообщение покупателю из шаблона (используем order_placed_single для единичных заказов)
+        tpl = await get_template("order_placed_single")
         contacts = await get_contacts_text()
+        # Извлекаем адрес из контактов
+        address, contacts_wo_addr = extract_address_and_contacts(contacts)
         try:
             await bot.send_message(
                 uid,
@@ -958,9 +960,8 @@ async def cb_order_make(call: CallbackQuery):
                     quantity=qty,
                     price_each=fmt_price(price_each),
                     total=fmt_price(total),
-                    user_id=uid,
-                    username=uname or "",
-                    contacts=contacts
+                    address=address,
+                    contacts=contacts_wo_addr
                 ),
                 disable_notification=True
             )
@@ -1214,15 +1215,18 @@ async def cb_cart_checkout(call: CallbackQuery):
     tpl_cart = await get_template("order_placed_multiple")
     # Собираем список номеров заказов
     order_ids = ", ".join(f"#{o.id}" for o, _, _, _ in created_orders)
+    # Извлекаем адрес из контактов
+    address, contacts_wo_addr = extract_address_and_contacts(contacts)
     try:
         await bot.send_message(
             uid,
             render_template(tpl_cart, 
+                          order_ids=order_ids,
                           items_count=total_items_count, 
                           total=fmt_price(total_sum), 
-                          contacts=contacts,
-                          cart_items=cart_items_text.strip(),
-                          order_ids=order_ids),
+                          address=address,
+                          contacts=contacts_wo_addr,
+                          cart_items=cart_items_text.strip()),
             disable_notification=True
         )
     except Exception:
@@ -3287,7 +3291,41 @@ async def on_set_monitored_store(m: Message):
     except Exception as e:
         await m.answer(f"❌ Ошибка: {e}")
 
-# Обработчик remove_monitored_store перемещен в начало файла
+@dp.message(Command("add_monitored_store"))
+async def on_add_monitored_store(m: Message):
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
+        await m.answer("⛔ Недостаточно прав.")
+        return
+    parts = (m.text or "").split(None, 1)
+    if len(parts) < 2:
+        await m.answer("Формат: /add_monitored_store 28,29")
+        return
+    try:
+        add = {int(x.strip()) for x in parts[1].split(",") if x.strip().isdigit()}
+        cur = await get_monitored_message_ids("store")
+        updated = set(cur) | set(add)
+        await set_monitored_message_ids("store", updated)
+        await m.answer(f"✅ Добавлены: {sorted(add)}\nТекущие: {sorted(updated)}")
+    except Exception as e:
+        await m.answer(f"❌ Ошибка: {e}")
+
+@dp.message(Command("remove_monitored_store"))
+async def on_remove_monitored_store(m: Message):
+    if not m.from_user or not await _is_manager(m.from_user.id, m.from_user.username, 'retail'):
+        await m.answer("⛔ Недостаточно прав.")
+        return
+    parts = (m.text or "").split(None, 1)
+    if len(parts) < 2:
+        await m.answer("Формат: /remove_monitored_store 28,29")
+        return
+    try:
+        dec = {int(x.strip()) for x in parts[1].split(",") if x.strip().isdigit()}
+        cur = await get_monitored_message_ids("store")
+        updated = set(cur) - set(dec)
+        await set_monitored_message_ids("store", updated)
+        await m.answer(f"✅ Удалены: {sorted(dec)}\nТекущие: {sorted(updated)}")
+    except Exception as e:
+        await m.answer(f"❌ Ошибка: {e}")
 
 @dp.message(Command("set_monitored_opt"))
 async def on_set_monitored_opt(m: Message):
