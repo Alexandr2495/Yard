@@ -226,11 +226,28 @@ async def upsert_for_message(channel_id, message_id, title, text):
             cm.text_len = len(text or "")
             cm.edited_at = now
 
-        # upsert products
+        # 1. Сначала деактивируем ВСЕ товары этого поста
+        await s.execute(
+            update(Product)
+            .where(
+                and_(
+                    Product.channel_id == channel_id,
+                    Product.group_message_id == message_id,
+                    Product.is_used == is_used
+                )
+            )
+            .values(
+                available=False,
+                order_index=None,
+                updated_at=now
+            )
+        )
+        
+        # 2. Затем создаем/активируем товары с новыми индексами
         for order_index, (name, price, flag) in enumerate(rows, 1):
             key = norm_key(name, flag)
-            keys_in_post.add(key)
-
+            
+            # Ищем существующий товар
             prod = (await s.execute(
                 select(Product).where(
                     and_(
@@ -241,8 +258,29 @@ async def upsert_for_message(channel_id, message_id, title, text):
                     )
                 )
             )).scalar_one_or_none()
-
-            if not prod:
+            
+            if prod:
+                # Обновляем существующий товар
+                prod.name = name[:400]
+                prod.available = True
+                prod.order_index = order_index
+                setattr(prod, price_field, price)
+                prod.category = category
+                prod.is_used = is_used
+                prod.updated_at = now
+                
+                # Обновляем extra_attrs
+                try:
+                    cur = dict(prod.extra_attrs or {})
+                except Exception:
+                    cur = {}
+                if is_used:
+                    cur.update(parse_used_attrs(name))
+                if flag:
+                    cur["flag"] = flag
+                prod.extra_attrs = cur or None
+            else:
+                # Создаем новый товар
                 prod = Product(
                     channel_id=channel_id,
                     group_message_id=message_id,
@@ -263,44 +301,6 @@ async def upsert_for_message(channel_id, message_id, title, text):
                 )
                 setattr(prod, price_field, price)
                 s.add(prod)
-            else:
-                setattr(prod, price_field, price)
-                prod.name = name[:400]
-                prod.available = True
-                prod.order_index = order_index
-                if category:
-                    prod.category = category
-                prod.is_used = is_used
-                # Обновляем/дополняем extra_attrs
-                try:
-                    cur = dict(prod.extra_attrs or {})
-                except Exception:
-                    cur = {}
-                if is_used:
-                    cur.update(parse_used_attrs(name))
-                if flag:
-                    cur["flag"] = flag
-                prod.extra_attrs = cur or None
-                prod.updated_at = now
-
-        # кого нет в посте — снимаем с наличия и чистим цену этого типа и этого is_used
-        if keys_in_post:
-            await s.execute(
-                update(Product)
-                .where(
-                    and_(
-                        Product.channel_id == channel_id,
-                        Product.group_message_id == message_id,
-                        Product.is_used == is_used,
-                        not_(Product.key.in_(keys_in_post))
-                    )
-                )
-                .values(
-                    available=False,
-                    **{price_field: None},
-                    updated_at=now
-                )
-            )
 
         await s.commit()
 
