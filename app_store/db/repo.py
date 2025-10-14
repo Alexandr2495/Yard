@@ -254,6 +254,6 @@ async def get_products_by_category(
                 price_field != None
             )
         )
-        .order_by(Product.name)
+        .order_by(Product.order_index.nulls_last(), Product.name)
     )
     return list(result.scalars())

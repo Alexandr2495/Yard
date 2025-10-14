@@ -55,6 +55,9 @@ class Product(Base):
 
     price_retail: Mapped[int | None] = mapped_column(BigInteger, default=None)
     price_wholesale: Mapped[int | None] = mapped_column(BigInteger, default=None)
+    
+    # Порядковый номер товара в посте (для сохранения порядка из поста)
+    order_index: Mapped[int | None] = mapped_column(Integer, default=None, index=True)
 
     category: Mapped[str | None] = mapped_column(String(100), default=None, index=True)
     requires_serial: Mapped[bool] = mapped_column(Boolean, default=False)

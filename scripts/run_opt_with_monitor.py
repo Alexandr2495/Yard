@@ -227,7 +227,7 @@ async def upsert_for_message(channel_id, message_id, title, text):
             cm.edited_at = now
 
         # upsert products
-        for name, price, flag in rows:
+        for order_index, (name, price, flag) in enumerate(rows, 1):
             key = norm_key(name, flag)
             keys_in_post.add(key)
 
@@ -252,6 +252,7 @@ async def upsert_for_message(channel_id, message_id, title, text):
                     requires_serial=False,
                     available=True,
                     is_used=is_used,
+                    order_index=order_index,
                     extra_attrs=(
                         {
                             **(parse_used_attrs(name) if is_used else {}),
@@ -266,6 +267,7 @@ async def upsert_for_message(channel_id, message_id, title, text):
                 setattr(prod, price_field, price)
                 prod.name = name[:400]
                 prod.available = True
+                prod.order_index = order_index
                 if category:
                     prod.category = category
                 prod.is_used = is_used

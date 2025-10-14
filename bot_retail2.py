@@ -174,7 +174,7 @@ async def get_contacts_text():
 
 async def get_template(name):
     default = DEFAULT_TEMPLATES.get(name, "")
-    return await get_setting(f"tpl:{name}", default)
+    return await get_setting(f"tpl:retail:{name}", default)
 
 def render_template(tpl, **kwargs):
     try:
@@ -623,7 +623,7 @@ async def fetch_products_page(group_message_id: int, is_used: bool, page: int, p
         pages = max(1, math.ceil(total / per_page))
         page = min(max(1, page), pages)
         offset = (page - 1) * per_page
-        q = select(Product).where(where_clause).order_by(Product.name).limit(per_page).offset(offset)
+        q = select(Product).where(where_clause).order_by(Product.order_index.nulls_last(), Product.name).limit(per_page).offset(offset)
         items = list((await s.execute(q)).scalars())
     return items, total, pages, page
 
@@ -1475,7 +1475,7 @@ async def upsert_for_message_rescan(channel_id: int, message_id: int, category: 
     keys_in_post = set()
 
     async with Session() as s:
-        for name, price, flag in rows:
+        for order_index, (name, price, flag) in enumerate(rows, 1):
             key = norm_key(name, flag)
             keys_in_post.add(key)
 
@@ -1499,6 +1499,7 @@ async def upsert_for_message_rescan(channel_id: int, message_id: int, category: 
                     category=category,
                     available=True,
                     is_used=is_used,
+                    order_index=order_index,
                     extra_attrs=(
                         {
                             **(parse_used_attrs(name) if is_used else {}),
@@ -1513,6 +1514,7 @@ async def upsert_for_message_rescan(channel_id: int, message_id: int, category: 
                 prod.price_retail = price
                 prod.name = name[:400]
                 prod.available = True
+                prod.order_index = order_index
                 if category:
                     prod.category = category
                 prod.is_used = is_used
@@ -1580,15 +1582,15 @@ async def main_menu_kb(user_id: Optional[int]) -> ReplyKeyboardMarkup:
         [KeyboardButton(text=BTN_CONTACTS), KeyboardButton(text=cart_text)],
     ]
     
-    # Проверяем права админа (из .env или БД)
+    # Проверяем права админа (БД приоритетна, .env для обратной совместимости)
     is_manager = False
     if user_id:
-        # Сначала проверяем .env (для обратной совместимости)
-        if MANAGER_USER_IDS and user_id in MANAGER_USER_IDS:
+        # Сначала проверяем БД (основной способ)
+        is_manager = await _is_manager(user_id, channel_type='retail')
+        
+        # Если не найден в БД, проверяем .env (для обратной совместимости)
+        if not is_manager and MANAGER_USER_IDS and user_id in MANAGER_USER_IDS:
             is_manager = True
-        else:
-            # Затем проверяем БД
-            is_manager = await _is_manager(user_id, channel_type='retail')
     
     if is_manager:
         # Админские функции с визуальными индикаторами (админ)
@@ -2901,15 +2903,16 @@ async def on_set_tpl(m: Message):
     if (m.text or "").startswith("/"):
         return
     
-    # Проверяем, является ли пользователь админом
+    # Проверяем, является ли пользователь админом (БД приоритетна)
     is_admin_user = False
-    if uid in MANAGER_USER_IDS:
+    try:
+        is_admin_user = await is_admin(uid, m.from_user.username if m.from_user else None)
+    except Exception:
+        pass
+    
+    # Если не найден в БД, проверяем .env (для обратной совместимости)
+    if not is_admin_user and MANAGER_USER_IDS and uid in MANAGER_USER_IDS:
         is_admin_user = True
-    else:
-        try:
-            is_admin_user = await is_admin(uid, m.from_user.username if m.from_user else None)
-        except Exception:
-            pass
     
     if is_admin_user:
         # Обрабатываем только если админ в режиме редактирования
@@ -2920,7 +2923,7 @@ async def on_set_tpl(m: Message):
             return
         if uid in PENDING_TEMPLATE_EDIT:
             name = PENDING_TEMPLATE_EDIT.pop(uid)
-            await set_setting(f"tpl:{name}", m.text)
+            await set_setting(f"tpl:retail:{name}", m.text)
             await m.answer(f"✅ <b>Шаблон <code>{name}</code> успешно обновлён!</b>\n\n💡 <i>Новый шаблон будет использоваться для соответствующих сообщений.</i>", parse_mode="HTML")
             return
         if uid in PENDING_ADMIN_ADD:
@@ -3401,7 +3404,7 @@ async def on_set_template(m: Message):
     new_template = parts[2]
     
     try:
-        await set_setting(f"tpl:{template_name}", new_template, f"Шаблон {template_name}", "templates")
+        await set_setting(f"tpl:retail:{template_name}", new_template, f"Шаблон {template_name}", "templates")
         await m.answer(f"✅ Шаблон {template_name} обновлен")
     except Exception as e:
         log.error(f"Error setting template: {e}")
@@ -3571,14 +3574,18 @@ async def _notify_managers_new_order(order, prod_name: str, price_each: int):
         log.error(f"Error notifying managers about order {order.id}: {e}")
 
 async def _is_manager(user_id: int, username: str = None, channel_type: str = 'retail') -> bool:
-    """Проверить, является ли пользователь менеджером (из .env или БД)"""
+    """Проверить, является ли пользователь менеджером (БД приоритетна)"""
     try:
-        # Сначала проверяем .env (для обратной совместимости)
+        # Проверяем БД (основной способ)
+        is_admin_in_db = await is_admin(user_id, username, channel_type)
+        if is_admin_in_db:
+            return True
+        
+        # Если не найден в БД, проверяем .env (для обратной совместимости)
         if MANAGER_USER_IDS and user_id in MANAGER_USER_IDS:
             return True
         
-        # Затем проверяем БД
-        return await is_admin(user_id, username, channel_type)
+        return False
     except Exception as e:
         log.error(f"Error checking manager status for user {user_id}: {e}")
         return False
@@ -3648,15 +3655,16 @@ async def on_possible_settings_text(m: Message):
     if m.text in button_texts:
         return
     
-    # Проверяем, является ли пользователь админом
+    # Проверяем, является ли пользователь админом (БД приоритетна)
     is_admin_user = False
-    if uid in MANAGER_USER_IDS:
+    try:
+        is_admin_user = await is_admin(uid, m.from_user.username if m.from_user else None)
+    except Exception:
+        pass
+    
+    # Если не найден в БД, проверяем .env (для обратной совместимости)
+    if not is_admin_user and MANAGER_USER_IDS and uid in MANAGER_USER_IDS:
         is_admin_user = True
-    else:
-        try:
-            is_admin_user = await is_admin(uid, m.from_user.username if m.from_user else None)
-        except Exception:
-            pass
     
     # Если пользователь НЕ админ, не обрабатываем сообщение
     if not is_admin_user:
@@ -3677,7 +3685,7 @@ async def on_possible_settings_text(m: Message):
             return
         if uid in PENDING_TEMPLATE_EDIT:
             name = PENDING_TEMPLATE_EDIT.pop(uid)
-            await set_setting(f"tpl:{name}", m.text)
+            await set_setting(f"tpl:retail:{name}", m.text)
             await m.answer(f"✅ <b>Шаблон <code>{name}</code> успешно обновлён!</b>\n\n💡 <i>Новый шаблон будет использоваться для соответствующих сообщений.</i>", parse_mode="HTML")
             return
         if uid in PENDING_ADMIN_ADD:
