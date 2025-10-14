@@ -2368,11 +2368,10 @@ def settings_root_kb() -> InlineKeyboardMarkup:
 
 def templates_list_kb() -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="📝 Подтверждение заказа (1 товар)", callback_data="settings:tpl:order_received")],
-        [InlineKeyboardButton(text="✅ Заказ одобрен", callback_data="settings:tpl:order_approved")],
-        [InlineKeyboardButton(text="❌ Заказ отклонен", callback_data="settings:tpl:order_rejected")],
-        [InlineKeyboardButton(text="🧺 Итоги корзины (несколько)", callback_data="settings:tpl:cart_checkout_summary")],
-        [InlineKeyboardButton(text="📢 Уведомление админам", callback_data="settings:tpl:admin_order_notification")],
+        [InlineKeyboardButton(text="✅ Заказ оформлен (1 товар)", callback_data="settings:tpl:order_placed_single")],
+        [InlineKeyboardButton(text="✅ Заказ оформлен (несколько)", callback_data="settings:tpl:order_placed_multiple")],
+        [InlineKeyboardButton(text="📢 Уведомление админам (личное)", callback_data="settings:tpl:admin_order_notification_personal")],
+        [InlineKeyboardButton(text="📢 Уведомление админам (группа)", callback_data="settings:tpl:admin_order_notification_group")],
         [InlineKeyboardButton(text=BTN_SETTINGS_BACK, callback_data="settings:back")],
     ])
 
