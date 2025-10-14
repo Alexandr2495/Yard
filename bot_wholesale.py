@@ -141,7 +141,7 @@ DEFAULT_TEMPLATES = {  # type: Dict[str, str]
         "{contacts}"
     ),
     "admin_order_notification": (
-        "🆕 <b>Новая заявка #{order_id}</b>\n\n"
+        "🆕 <b>Новая оптовая заявка #{order_id}</b>\n\n"
         "👤 <b>Покупатель:</b> <code>{user_id}</code>{username_info}\n"
         "📦 <b>Товар:</b> {product_name}\n"
         "🔢 <b>Количество:</b> {quantity} шт.\n"
