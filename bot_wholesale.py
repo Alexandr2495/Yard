@@ -2155,7 +2155,7 @@ async def on_menu(m: Message):
         # Принудительно отправляем основное меню
         message = await m.answer("🏠 <b>Главное меню</b>\n\nВыберите действие:", 
                        parse_mode="HTML", 
-                       reply_markup=await main_menu_kb(user_id))
+                       reply_markup=await main_menu_kb(user_id, m.chat.type))
         # Сохраняем ID сообщения с главным меню
         LAST_MAIN_MENU_MESSAGE[user_id] = message.message_id
     except Exception as e:
@@ -2192,7 +2192,7 @@ async def on_start(m: Message):
                 "🏠 <b>Добро пожаловать в оптовый магазин!</b>\n\n"
                 "Выберите действие:",
                 parse_mode="HTML",
-                reply_markup=await main_menu_kb(user_id)
+                reply_markup=await main_menu_kb(user_id, m.chat.type)
             )
             # Сохраняем ID сообщения с главным меню
             LAST_MAIN_MENU_MESSAGE[user_id] = message.message_id
@@ -2204,7 +2204,7 @@ async def on_start(m: Message):
 async def on_catalog_button(m: Message):
     cats = await fetch_categories()
     if not cats:
-        await m.answer("Категории не настроены или пусто.", reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0))
+        await m.answer("Категории не настроены или пусто.", reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0, m.chat.type))
         return
     max_row_chars = 34 if any(len(t) > 16 for t, _ in cats) else 40
     kb = adaptive_kb(cats, max_per_row=2, max_row_chars=max_row_chars)
@@ -2213,7 +2213,7 @@ async def on_catalog_button(m: Message):
 @dp.message(F.text.casefold() == BTN_CONTACTS.casefold())
 async def on_contacts(m: Message):
     contacts = await get_contacts_text()
-    await m.answer(contacts, reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0))
+    await m.answer(contacts, reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0, m.chat.type))
 
 @dp.message(F.text.casefold().startswith(BTN_CART.casefold()))
 async def on_cart_btn(m: Message):
@@ -2225,7 +2225,7 @@ async def on_cart_btn(m: Message):
     log.info(f"Total items in cart: {len(items)}")
     
     if not items:
-        await m.answer("🛒 <b>Ваша корзина пуста</b>\n\n💡 <i>Добавьте товары из каталога, чтобы оформить заказ.</i>", reply_markup=await main_menu_kb(uid), parse_mode="HTML")
+        await m.answer("🛒 <b>Ваша корзина пуста</b>\n\n💡 <i>Добавьте товары из каталога, чтобы оформить заказ.</i>", reply_markup=await main_menu_kb(uid, m.chat.type), parse_mode="HTML")
         return
     lines = ["🧺 <b>Корзина</b>"]
     for it in items[:12]:
@@ -2244,7 +2244,7 @@ async def on_cart_btn(m: Message):
 @dp.message(F.text == "⬅️ Назад в меню")
 async def on_back_to_menu(m: Message):
     user_id = m.from_user.id if m.from_user else 0
-    message = await m.answer("🏠 <b>Главное меню</b>\nВыберите действие:", parse_mode="HTML", reply_markup=await main_menu_kb(user_id))
+    message = await m.answer("🏠 <b>Главное меню</b>\nВыберите действие:", parse_mode="HTML", reply_markup=await main_menu_kb(user_id, m.chat.type))
     # Сохраняем ID сообщения с главным меню
     LAST_MAIN_MENU_MESSAGE[user_id] = message.message_id
 
@@ -2275,7 +2275,7 @@ async def on_back_to_menu(m: Message):
 #     """Вернуться к категориям"""
 #     cats = await fetch_categories()
 #     if not cats:
-#         await m.answer("Категории не настроены или пусто.", reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0))
+#         await m.answer("Категории не настроены или пусто.", reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0, m.chat.type))
 #         return
 #     max_row_chars = 34 if any(len(t) > 16 for t, _ in cats) else 40
 #     kb = adaptive_kb(cats, max_per_row=2, max_row_chars=max_row_chars)
@@ -2534,7 +2534,7 @@ async def on_back_to_menu(m: Message):
     
 #     await m.answer("🏠 <b>Главное меню</b>\n\nВыберите действие:", 
 #                    parse_mode="HTML", 
-#                    reply_markup=await main_menu_kb(user_id))
+#                    reply_markup=await main_menu_kb(user_id, m.chat.type))
 
 # async def show_iphone_products_with_filters(m: Message, filters: Dict[str, str]):
 #     """Показать товары iPhone с применением фильтров"""
@@ -3081,7 +3081,7 @@ async def on_diag(m: Message):
             "✅ <b>Система работает нормально</b>"
         ])
     
-    await m.answer("\n".join(lines), parse_mode="HTML", reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0))
+    await m.answer("\n".join(lines), parse_mode="HTML", reply_markup=await main_menu_kb(m.from_user.id if m.from_user else 0, m.chat.type))
 
 @dp.message(Command("fix_categories"))
 async def cmd_fix_categories(m: Message):
@@ -3669,7 +3669,7 @@ async def settings_back(c: CallbackQuery):
 async def settings_back_to_menu(c: CallbackQuery):
     try:
         # Отправляем новое сообщение с главным меню
-        await c.message.answer("🏠 <b>Главное меню</b>\nВыберите действие:", parse_mode="HTML", reply_markup=await main_menu_kb(c.from_user.id if c.from_user else 0))
+        await c.message.answer("🏠 <b>Главное меню</b>\nВыберите действие:", parse_mode="HTML", reply_markup=await main_menu_kb(c.from_user.id if c.from_user else 0, c.message.chat.type))
     except Exception as e:
         log.error(f"Error sending main menu: {e}")
     await c.answer()
@@ -3704,7 +3704,7 @@ async def update_main_menu_for_user(user_id: int, bot: Bot):
             chat_id=user_id,
             text="🏠 <b>Главное меню</b>\nВыберите действие:",
             parse_mode="HTML",
-            reply_markup=await main_menu_kb(user_id)
+            reply_markup=await main_menu_kb(user_id, m.chat.type)
         )
         # Обновляем ID последнего сообщения
         LAST_MAIN_MENU_MESSAGE[user_id] = message.message_id
@@ -5236,7 +5236,7 @@ async def cancel_admin_remove(c: CallbackQuery):
     await c.message.edit_text("❌ Удаление админа отменено")
     await c.answer()
 
-async def main_menu_kb(user_id: Optional[int]) -> ReplyKeyboardMarkup:
+async def main_menu_kb(user_id: Optional[int], chat_type: str = "private") -> ReplyKeyboardMarkup:
     # Формируем текст кнопки корзины с количеством товаров
     cart_text = BTN_CART
     if user_id:
@@ -5253,8 +5253,9 @@ async def main_menu_kb(user_id: Optional[int]) -> ReplyKeyboardMarkup:
     ]
     
     # Проверяем права админа (БД приоритетна, .env для обратной совместимости)
+    # Админские кнопки показываем ТОЛЬКО в личных чатах
     is_manager = False
-    if user_id:
+    if user_id and chat_type == "private":
         # Сначала проверяем БД (основной способ)
         try:
             is_manager = await is_admin(user_id, channel_type='wholesale')
