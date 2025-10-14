@@ -140,7 +140,16 @@ DEFAULT_TEMPLATES = {  # type: Dict[str, str]
         "Мы свяжемся с вами для подтверждения деталей заказа!</i>\n\n"
         "{contacts}"
     ),
-    "admin_order_notification": (
+    "admin_order_notification_personal": (
+        "🆕 <b>Новая оптовая заявка #{order_id}</b>\n\n"
+        "👤 <b>Покупатель:</b> <code>{user_id}</code>{username_info}\n"
+        "📦 <b>Товар:</b> {product_name}\n"
+        "🔢 <b>Количество:</b> {quantity} шт.\n"
+        "💰 <b>Цена за штуку:</b> {price_each} ₽\n"
+        "💵 <b>Общая сумма:</b> {total_price} ₽\n\n"
+        "⚡ <b>Требуется ваше решение:</b>"
+    ),
+    "admin_order_notification_group": (
         "🆕 <b>Новая оптовая заявка #{order_id}</b>\n\n"
         "👤 <b>Покупатель:</b> <code>{user_id}</code>{username_info}\n"
         "📦 <b>Товар:</b> {product_name}\n"
@@ -3707,7 +3716,7 @@ async def update_main_menu_for_user(user_id: int, bot: Bot):
             chat_id=user_id,
             text="🏠 <b>Главное меню</b>\nВыберите действие:",
             parse_mode="HTML",
-            reply_markup=await main_menu_kb(user_id, m.chat.type)
+            reply_markup=await main_menu_kb(user_id, "private")
         )
         # Обновляем ID последнего сообщения
         LAST_MAIN_MENU_MESSAGE[user_id] = message.message_id
@@ -3839,7 +3848,8 @@ async def settings_template_edit(c: CallbackQuery):
         "order_approved": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
         "order_rejected": "{product_name}, {quantity}, {contacts}",
         "cart_checkout_summary": "{cart_items}, {items_count}, {total}, {contacts}",
-        "admin_order_notification": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}"
+        "admin_order_notification_personal": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}",
+        "admin_order_notification_group": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}"
     }
     ph = placeholders_by_tpl.get(name, "{contacts}")
     kb = InlineKeyboardMarkup(inline_keyboard=[
@@ -4169,7 +4179,7 @@ async def on_set_tpl(m: Message):
         return
     parts = (m.text or "").split(None, 1)
     if len(parts) < 2:
-        await m.answer("Укажите имя: /set_template order_received|order_approved|order_rejected|cart_checkout_summary")
+        await m.answer("Укажите имя: /set_template order_received|order_approved|order_rejected|cart_checkout_summary|admin_order_notification_personal|admin_order_notification_group")
         return
     name = parts[1].strip()
     if name not in DEFAULT_TEMPLATES:
@@ -4641,7 +4651,7 @@ async def on_set_template(m: Message):
     
     parts = (m.text or "").split(None, 2)
     if len(parts) < 3:
-        await m.answer("Формат: /set_template order_received <новый шаблон>")
+        await m.answer("Формат: /set_template order_received|order_approved|order_rejected|cart_checkout_summary|admin_order_notification_personal|admin_order_notification_group <новый шаблон>")
         return
     
     template_name = parts[1]
@@ -4784,33 +4794,45 @@ async def _notify_managers_new_order(order, prod_name: str, price_each: int):
         flag = ""
     prod_label = f"{prod_name}{flag}{' (Б/У)' if is_used_flag else ''}"
     
-    # Получаем шаблон уведомления
-    template = await get_template("admin_order_notification")
+    # Получаем шаблоны уведомлений (отдельно для личных и групповых сообщений)
+    template_personal = await get_template("admin_order_notification_personal")
+    template_group = await get_template("admin_order_notification_group")
     
-    # Формируем сообщение для менеджеров
-    msg = render_template(template,
-        order_id=order.id,
-        user_id=order.user_id,
-        username_info=(' @'+order.username) if order.username else '',
-        product_name=prod_label,
-        quantity=order.quantity,
-        price_each=fmt_price(price_each),
-        total_price=fmt_price(total)
-    )
     sent_msg = None
+    # Отправляем уведомление в группу менеджеров
     if MANAGER_GROUP_ID:
         try:
-            sent_msg = await bot.send_message(MANAGER_GROUP_ID, msg, reply_markup=_manager_decision_kb(order.id), disable_notification=True)
-        except Exception:
+            msg_group = render_template(template_group,
+                order_id=order.id,
+                user_id=order.user_id,
+                username_info=(' @'+order.username) if order.username else '',
+                product_name=prod_label,
+                quantity=order.quantity,
+                price_each=fmt_price(price_each),
+                total_price=fmt_price(total)
+            )
+            sent_msg = await bot.send_message(MANAGER_GROUP_ID, msg_group, reply_markup=_manager_decision_kb(order.id), disable_notification=True)
+            log.info(f"Wholesale order notification sent to managers group: {order.id}")
+        except Exception as e:
+            log.error(f"Failed to send group notification for order {order.id}: {e}")
             sent_msg = None
-    if not sent_msg:
-        for mid in MANAGER_USER_IDS:
-            try:
-                sent_msg = await bot.send_message(mid, msg, reply_markup=_manager_decision_kb(order.id), disable_notification=True)
-                if sent_msg:
-                    break
-            except Exception:
-                continue
+    
+    # Отправляем уведомление отдельным менеджерам
+    for manager_id in MANAGER_USER_IDS:
+        try:
+            msg_personal = render_template(template_personal,
+                order_id=order.id,
+                user_id=order.user_id,
+                username_info=(' @'+order.username) if order.username else '',
+                product_name=prod_label,
+                quantity=order.quantity,
+                price_each=fmt_price(price_each),
+                total_price=fmt_price(total)
+            )
+            await bot.send_message(manager_id, msg_personal, reply_markup=_manager_decision_kb(order.id), disable_notification=True)
+            log.info(f"Wholesale order notification sent to manager {manager_id}: {order.id}")
+        except Exception as e:
+            log.warning(f"Failed to notify manager {manager_id}: {e}")
     if sent_msg:
         async with Session() as s:
             await s.execute(text("UPDATE orders SET decision_message_id=:mid WHERE id=:oid"), {"mid": sent_msg.message_id, "oid": order.id})

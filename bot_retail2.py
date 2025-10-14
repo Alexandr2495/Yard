@@ -125,7 +125,16 @@ DEFAULT_TEMPLATES = {  # type: Dict[str, str]
         "Мы свяжемся с вами для подтверждения деталей заказа!</i>\n\n"
         "{contacts}"
     ),
-    "admin_order_notification": (
+    "admin_order_notification_personal": (
+        "🛒 <b>Новый розничный заказ #{order_id}</b>\n\n"
+        "👤 <b>Покупатель:</b> <code>{user_id}</code>{username_info}\n"
+        "📦 <b>Товар:</b> {product_name}\n"
+        "📊 <b>Количество:</b> {quantity} шт.\n"
+        "💰 <b>Цена за штуку:</b> {price_each} ₽\n"
+        "💵 <b>Общая сумма:</b> {total_price} ₽\n\n"
+        "📞 <b>Свяжитесь с покупателем для подтверждения заказа</b>"
+    ),
+    "admin_order_notification_group": (
         "🛒 <b>Новый розничный заказ #{order_id}</b>\n\n"
         "👤 <b>Покупатель:</b> <code>{user_id}</code>{username_info}\n"
         "📦 <b>Товар:</b> {product_name}\n"
@@ -945,8 +954,8 @@ async def cb_order_make(call: CallbackQuery):
         await s.commit()
 
         total = price_each * qty
-        # сообщение покупателю из шаблона
-        tpl = await get_template("order_received")
+        # сообщение покупателю из шаблона (используем order_placed_single для розничного бота)
+        tpl = await get_template("order_placed_single")
         contacts = await get_contacts_text()
         try:
             await bot.send_message(
@@ -2533,11 +2542,10 @@ async def settings_template_edit(c: CallbackQuery):
     PENDING_TEMPLATE_EDIT[c.from_user.id] = name
     # Определяем плейсхолдеры для каждого шаблона
     placeholders_by_tpl = {
-        "order_received": "{product_name}, {quantity}, {price_each}, {total}, {contacts}",
-        "order_approved": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
-        "order_rejected": "{product_name}, {quantity}, {contacts}",
-        "cart_checkout_summary": "{cart_items}, {items_count}, {total}, {contacts}",
-        "admin_order_notification": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}"
+        "order_placed_single": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
+        "order_placed_multiple": "{cart_items}, {items_count}, {total}, {address}, {contacts}",
+        "admin_order_notification_personal": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}",
+        "admin_order_notification_group": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}"
     }
     
     ph = placeholders_by_tpl.get(name, "{contacts}")
@@ -2868,7 +2876,7 @@ async def on_set_tpl(m: Message):
         return
     parts = (m.text or "").split(None, 1)
     if len(parts) < 2:
-        await m.answer("Укажите имя: /set_template order_received|order_approved|order_rejected|cart_checkout_summary")
+        await m.answer("Укажите имя: /set_template order_placed_single|order_placed_multiple|admin_order_notification_personal|admin_order_notification_group")
         return
     name = parts[1].strip()
     if name not in DEFAULT_TEMPLATES:
@@ -2877,11 +2885,10 @@ async def on_set_tpl(m: Message):
     PENDING_TEMPLATE_EDIT[m.from_user.id] = name
     # Определяем плейсхолдеры для каждого шаблона
     placeholders_by_tpl = {
-        "order_received": "{product_name}, {quantity}, {price_each}, {total}, {contacts}",
-        "order_approved": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
-        "order_rejected": "{product_name}, {quantity}, {contacts}",
-        "cart_checkout_summary": "{cart_items}, {items_count}, {total}, {contacts}",
-        "admin_order_notification": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}"
+        "order_placed_single": "{product_name}, {quantity}, {price_each}, {total}, {address}, {contacts}",
+        "order_placed_multiple": "{cart_items}, {items_count}, {total}, {address}, {contacts}",
+        "admin_order_notification_personal": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}",
+        "admin_order_notification_group": "{order_id}, {user_id}, {username_info}, {product_name}, {quantity}, {price_each}, {total_price}"
     }
     
     ph = placeholders_by_tpl.get(name, "{contacts}")
@@ -3397,7 +3404,7 @@ async def on_set_template(m: Message):
     
     parts = (m.text or "").split(None, 2)
     if len(parts) < 3:
-        await m.answer("Формат: /set_template order_received <новый шаблон>")
+        await m.answer("Формат: /set_template order_placed_single|order_placed_multiple|admin_order_notification_personal|admin_order_notification_group <новый шаблон>")
         return
     
     template_name = parts[1]
@@ -3517,8 +3524,9 @@ async def on_test_button_length(m: Message):
 async def _notify_managers_new_order(order, prod_name: str, price_each: int):
     """Уведомить менеджеров о новом заказе (упрощенная версия без кнопок)"""
     try:
-        # Получаем шаблон уведомления
-        template = await get_template("admin_order_notification")
+        # Получаем шаблоны уведомлений (отдельно для личных и групповых сообщений)
+        template_personal = await get_template("admin_order_notification_personal")
+        template_group = await get_template("admin_order_notification_group")
         
         # Получаем информацию о пользователе
         user_info = f"@{order.username}" if order.username else f"ID: {order.user_id}"
@@ -3539,32 +3547,39 @@ async def _notify_managers_new_order(order, prod_name: str, price_each: int):
         # Формируем полное название товара с флагом (как в оптовом боте)
         prod_label = f"{prod_name}{flag}{' (Б/У)' if is_used_flag else ''}"
         
-        # Формируем сообщение для менеджеров
-        text = render_template(template,
-            order_id=order.id,
-            user_id=order.user_id,
-            username_info=(' @'+order.username) if order.username else '',
-            product_name=prod_label,
-            quantity=order.quantity,
-            price_each=fmt_price(price_each),
-            total_price=fmt_price(order.quantity * price_each)
-        )
-        
         # Отправляем уведомление в группу менеджеров
         if MANAGER_GROUP_ID:
+            text_group = render_template(template_group,
+                order_id=order.id,
+                user_id=order.user_id,
+                username_info=(' @'+order.username) if order.username else '',
+                product_name=prod_label,
+                quantity=order.quantity,
+                price_each=fmt_price(price_each),
+                total_price=fmt_price(order.quantity * price_each)
+            )
             await bot.send_message(
                 MANAGER_GROUP_ID,
-                text,
+                text_group,
                 parse_mode="HTML"
             )
-            log.info(f"Retail order notification sent to managers: {order.id}")
+            log.info(f"Retail order notification sent to managers group: {order.id}")
         
         # Отправляем уведомление отдельным менеджерам
         for manager_id in MANAGER_USER_IDS:
             try:
+                text_personal = render_template(template_personal,
+                    order_id=order.id,
+                    user_id=order.user_id,
+                    username_info=(' @'+order.username) if order.username else '',
+                    product_name=prod_label,
+                    quantity=order.quantity,
+                    price_each=fmt_price(price_each),
+                    total_price=fmt_price(order.quantity * price_each)
+                )
                 await bot.send_message(
                     manager_id,
-                    text,
+                    text_personal,
                     parse_mode="HTML"
                 )
             except Exception as e:
